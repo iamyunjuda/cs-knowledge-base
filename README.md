@@ -1,4 +1,4 @@
-﻿# CS Knowledge Base
+# CS Knowledge Base
 
 헷갈리기 쉬운 CS 지식들을 정리하는 저장소입니다.
 
