@@ -4,15 +4,6 @@
 
 ## 목차
 
-아직 작성된 문서가 없습니다. 새로운 주제를 추가하면 여기에 자동으로 인덱싱됩니다.
-
-<!--
-카테고리 예시:
-- Java / JVM
-- Spring
-- 네트워크
-- 운영체제
-- 데이터베이스
-- 자료구조
-- 디자인 패턴
--->
+### Java / JVM
+- [JVM 동작 원리 — 다른 언어와의 비교 및 버전별 변화](java-jvm/jvm-internals.md)
+- [JVM 메모리 구조](java-jvm/jvm-memory-structure.md)
