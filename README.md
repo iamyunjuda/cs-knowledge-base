@@ -10,3 +10,8 @@
   - JVM의 코드 실행 과정, HotSpot Tiered Compilation, 다른 언어(C/C++, Python, C#, Go, JS)와의 실행 모델 비교, Java 버전별 JVM 주요 변화
 - [JVM 메모리 구조](java-jvm/jvm-memory-structure.md)
   - Heap(세대별 구조, G1GC, ZGC), Method Area(PermGen → Metaspace), JVM Stack, String Pool, Direct Memory, 주요 OOM 에러 정리
+
+### Network
+
+- [HTTP/HTTPS와 TCP의 관계](network/http-tcp-relationship.md)
+  - TCP 위에서 동작하는 HTTP/HTTPS/WebSocket, 프로토콜 계층 구조, localhost와 DNS 해석 순서, hosts 파일 활용
