@@ -31,7 +31,7 @@ search:
 heading_anchors: true
 footer_content: "CS Knowledge Base &mdash; 헷갈리기 쉬운 CS 지식 정리"
 
-# Google Analytics (GA4 측정 ID, 예: G-XXXXXXXXXX)
+# Google Analytics (GA4 측정 ID)
 google_analytics: G-LYZFLNQ436
 
 # 검색엔진 인증 (Search Console / Naver에서 발급받은 코드 입력)
