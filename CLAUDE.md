@@ -18,6 +18,7 @@
 - `database/` - SQL, 인덱스, 트랜잭션, DB 설계 등
 - `data-structure/` - 자료구조, 알고리즘 등
 - `infra/` - Kafka, Redis, Docker, 인프라 미들웨어 등
+- `blockchain/` - Web3, 이더리움, 지갑, 스마트 컨트랙트, DeFi 등
 - `design-pattern/` - 디자인 패턴, 아키텍처 등
 
 ### 2. 마크다운 파일 생성

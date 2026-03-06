@@ -31,6 +31,11 @@
 - [Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리](infra/kafka-deep-dive.md)
   - Partition 기반 순서 보장, Partition Key, acks(0/1/all), ISR, enable.idempotence, Consumer offset 관리(auto/manual), At Least Once/Exactly Once, Rebalancing, CooperativeStickyAssignor, 실무 설정 가이드
 
+### Blockchain / Web3
+
+- [Web3 / 지갑 / 이더리움 네트워크 생태계 — 백엔드 개발자를 위한 총정리](blockchain/web3-ethereum-ecosystem.md)
+  - Web2 vs Web3 차이, 이더리움 구조(EVM/Gas/EIP-1559), EOA/CA 계정 체계, HD Wallet(BIP-39/44), 스마트 컨트랙트(Solidity), DeFi/NFT/ERC 토큰 표준, L2(Optimistic/ZK Rollup), SIWE 인증, 이벤트 인덱싱, 트랜잭션 관리, 참고 레포 정리
+
 ### OS / 운영체제
 
 - [CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프](os/ssd-hdd-ram-comparison.md)
