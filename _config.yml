@@ -38,6 +38,13 @@ google_analytics: G-LYZFLNQ436
 google_site_verification: "kvim__rgjS6ZM55mXN2Gq_ONBLrGNed1Cvz_Al_qeoI"
 # naver_site_verification: "여기에_네이버_인증코드"
 
+# 모든 페이지에 기본 레이아웃 적용
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
 # 빌드에서 제외
 exclude:
   - CLAUDE.md
