@@ -521,7 +521,7 @@ contract.on("Transfer", (from, to, value, event) => {
 | [wevm/viem](https://github.com/wevm/viem) | TypeScript 우선 이더리움 라이브러리. 타입 안전성과 성능에 중점, ethers.js 대안 |
 | [wevm/wagmi](https://github.com/wevm/wagmi) | React Hooks 기반 이더리움 연동 라이브러리. viem 위에 구축 |
 | [web3j/web3j](https://github.com/web3j/web3j) | Java/Android용 이더리움 라이브러리. Spring Boot 통합 지원 |
-| [ChainSafe/web3.js](https://github.com/ChainSafe/web3.js) | 원조 이더리움 JS 라이브러리. 레거시 프로젝트에서 여전히 사용 |
+| [ChainSafe/web3.js](https://github.com/ChainSafe/web3.js) | 원조 이더리움 JS 라이브러리. **2025.3 아카이브됨**, 신규 프로젝트엔 viem/ethers 권장 |
 
 ### 스마트 컨트랙트 개발
 
@@ -558,6 +558,10 @@ contract.on("Transfer", (from, to, value, event) => {
 | [smartcontractkit/full-blockchain-solidity-course-js](https://github.com/smartcontractkit/full-blockchain-solidity-course-js) | Patrick Collins의 Solidity 풀코스 (32시간 무료 강의 코드) |
 | [Cyfrin/foundry-full-course-cu](https://github.com/Cyfrin/foundry-full-course-cu) | Foundry 기반 Solidity 최신 풀코스. Cyfrin Updraft 커리큘럼 |
 | [DeFiVulnLabs](https://github.com/SunWeb3Sec/DeFiVulnLabs) | DeFi 보안 취약점 실습. Reentrancy, Flash Loan, Oracle Manipulation 등 |
+| [AmazingAng/WTF-Solidity](https://github.com/AmazingAng/WTF-Solidity) | ⭐11.2k. 초보자 친화 Solidity 튜토리얼. ERC-20/721, 에어드랍, 서명 검증 등 |
+| [theredguild/damn-vulnerable-defi](https://github.com/theredguild/damn-vulnerable-defi) | 스마트 컨트랙트 보안 CTF. Flash Loan, Oracle, DEX, 거버넌스 공격 실습 |
+| [smartcontractkit/defi-minimal](https://github.com/smartcontractkit/defi-minimal) | DeFi 핵심 개념(DEX, 토큰 스왑 등)의 최소 구현. 복잡한 프로덕션 코드 없이 원리 파악에 최적 |
+| [OffcierCia/DeFi-Developer-Road-Map](https://github.com/OffcierCia/DeFi-Developer-Road-Map) | ⭐8.8k. DeFi 개발자 로드맵. 도구, 보안 팁, 학습 경로 큐레이션 |
 
 ### 보안
 
@@ -566,3 +570,44 @@ contract.on("Transfer", (from, to, value, event) => {
 | [crytic/slither](https://github.com/crytic/slither) | Solidity 정적 분석 도구. 취약점 자동 탐지 |
 | [consensys/mythril](https://github.com/consensys/mythril) | EVM 바이트코드 보안 분석 도구. Symbolic Execution 기반 |
 | [pcaversaccio/snapper](https://github.com/pcaversaccio/snapper) | 스마트 컨트랙트 스토리지 스냅샷 도구 |
+
+### 한국어 리소스
+
+| 레포 | 설명 |
+|------|------|
+| [yunho0130/awesome-blockchain-kor](https://github.com/yunho0130/awesome-blockchain-kor) | "블록체인의 정석" 서적 소스코드 및 참고자료. 블록체인 원리, ICO 이해 등 |
+| [mingrammer/blockchain-tutorial](https://github.com/mingrammer/blockchain-tutorial) | "Building Blockchain in Go" 한국어 번역. Go로 블록체인 직접 구현하며 학습 |
+| [solidity-docs/ko-korean](https://github.com/solidity-docs/ko-korean) | Solidity 공식 문서 한국어 번역 프로젝트 |
+| [ConsenSys/ethereum-developer-tools-list (한국어)](https://github.com/ConsenSys/ethereum-developer-tools-list/blob/master/README_Korean.md) | ConsenSys 이더리움 개발 도구 모음 한국어 번역 |
+
+---
+
+## 추천 학습 로드맵 (백엔드 개발자용)
+
+```
+[1단계: 기초 이해]
+  Patrick Collins 풀코스 (full-blockchain-solidity-course-js)
+  → 블록체인 기초 + Solidity + Hardhat
+
+[2단계: 실습]
+  CryptoZombies 또는 SpeedRunEthereum 챌린지
+  → 게임형 학습으로 Solidity 문법 체득
+
+[3단계: 표준 학습]
+  OpenZeppelin Contracts 소스 코드 읽기
+  → ERC-20/721 구현, Access Control 패턴 이해
+
+[4단계: 실전 DeFi]
+  Uniswap V3/V4 소스 코드 분석
+  → AMM, Concentrated Liquidity, Hooks 아키텍처
+
+[5단계: 보안]
+  Damn Vulnerable DeFi + DeFiVulnLabs
+  → Reentrancy, Flash Loan, Oracle 공격 이해
+
+[6단계: 모던 도구]
+  Foundry + viem으로 직접 프로젝트 구축
+  → 2025~2026 기준 업계 표준 도구 체인
+
+참고: web3.js는 2025.3 아카이브됨 → viem 또는 ethers.js 사용 권장
+```
