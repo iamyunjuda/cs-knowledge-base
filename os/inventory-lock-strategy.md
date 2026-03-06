@@ -155,14 +155,32 @@ public class OrderService {
             return OrderResponse.soldOut();
         }
 
-        // ② 재고 확보 성공 → 비동기로 주문 처리
+        // ② 재고 확보 성공 → Kafka로 비동기 처리 위임
         String orderId = UUID.randomUUID().toString();
-        kafka.send("order-topic", new OrderEvent(orderId, productId, quantity));
-
-        return OrderResponse.success(orderId);
+        try {
+            kafka.send("order-topic", new OrderEvent(orderId, productId, quantity)).get();
+            return OrderResponse.success(orderId);
+        } catch (Exception e) {
+            // ③ Kafka 발행 실패 → Redis 재고 복구!
+            redis.opsForValue().increment(key, quantity);
+            return OrderResponse.fail("주문 처리 실패, 다시 시도해주세요");
+        }
     }
 }
 ```
+
+**⚠️ 주의: Kafka 발행 자체가 실패하는 경우**
+
+위 코드에서 `kafka.send().get()`으로 **동기적으로 발행 성공을 확인**한다. 만약 이걸 안 하면:
+
+```
+Redis DECR → 99 (✅) → kafka.send() (fire-and-forget) → 응답 반환
+                           │
+                           └─ Kafka 브로커 장애로 유실! → 주문 처리 안 됨
+                              고객은 "성공" 받았는데 실제로는 아무 일도 안 일어남
+```
+
+`get()`으로 확인하면 Kafka 응답을 기다리므로 레이턴시가 약간 올라가지만 (~0.5ms → ~2ms), 이벤트 유실을 방지할 수 있다. **정합성이 극도로 중요한 경우(결제 등)에는 Transactional Outbox 패턴(Q4의 전략 2)이 근본적 해결책이다.**
 
 **왜 이게 Lock보다 좋은가:**
 
