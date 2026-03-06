@@ -4,7 +4,7 @@ url: ""
 baseurl: "/cs-knowledge-base"
 
 # 테마
-remote_theme: just-the-docs/just-the-docs@v0.10.1
+remote_theme: just-the-docs/just-the-docs@v0.10.2
 
 # 마크다운
 markdown: kramdown
