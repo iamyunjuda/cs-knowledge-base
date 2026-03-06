@@ -1,0 +1,27 @@
+---
+layout: null
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ site.title | xml_escape }}</title>
+    <description>{{ site.description | xml_escape }}</description>
+    <link>{{ site.url }}{{ site.baseurl }}/</link>
+    <atom:link href="{{ site.url }}{{ site.baseurl }}/feed.xml" rel="self" type="application/rss+xml"/>
+    <language>ko</language>
+    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
+    {% assign pages_sorted = site.pages | sort: 'date' | reverse %}
+    {% for page in pages_sorted %}
+      {% if page.title and page.url != "/" and page.url != "/index.html" and page.name != "feed.xml" and page.name != "sitemap.xml" and page.name != "robots.txt" %}
+        {% unless page.name == "index.md" %}
+    <item>
+      <title>{{ page.title | xml_escape }}</title>
+      <link>{{ site.url }}{{ site.baseurl }}{{ page.url }}</link>
+      <guid isPermaLink="true">{{ site.url }}{{ site.baseurl }}{{ page.url }}</guid>
+      <description>{{ page.content | strip_html | truncatewords: 80 | xml_escape }}</description>
+    </item>
+        {% endunless %}
+      {% endif %}
+    {% endfor %}
+  </channel>
+</rss>

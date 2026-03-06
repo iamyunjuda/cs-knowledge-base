@@ -17,6 +17,11 @@ kramdown:
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
+  - jekyll-feed
+
+# jekyll-feed 설정
+feed:
+  path: atom.xml
 
 # just-the-docs 설정
 color_scheme: light
@@ -25,6 +30,13 @@ search:
   heading_level: 3
 heading_anchors: true
 footer_content: "CS Knowledge Base &mdash; 헷갈리기 쉬운 CS 지식 정리"
+
+# Google Analytics (GA4 측정 ID, 예: G-XXXXXXXXXX)
+# google_analytics: G-XXXXXXXXXX
+
+# 검색엔진 인증 (Search Console / Naver에서 발급받은 코드 입력)
+# google_site_verification: "여기에_구글_인증코드"
+# naver_site_verification: "여기에_네이버_인증코드"
 
 # 빌드에서 제외
 exclude:
