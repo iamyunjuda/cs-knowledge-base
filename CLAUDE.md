@@ -17,6 +17,7 @@
 - `os/` - 프로세스, 스레드, 동기/비동기, 운영체제 등
 - `database/` - SQL, 인덱스, 트랜잭션, DB 설계 등
 - `data-structure/` - 자료구조, 알고리즘 등
+- `infra/` - Kafka, Redis, Docker, 인프라 미들웨어 등
 - `design-pattern/` - 디자인 패턴, 아키텍처 등
 
 ### 2. 마크다운 파일 생성
