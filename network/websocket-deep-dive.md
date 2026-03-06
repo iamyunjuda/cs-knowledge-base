@@ -1,3 +1,9 @@
+---
+title: WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지
+parent: Network
+nav_order: 4
+---
+
 # WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지
 
 ## 핵심 정리

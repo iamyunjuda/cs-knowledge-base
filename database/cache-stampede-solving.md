@@ -1,3 +1,9 @@
+---
+title: Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서
+parent: Database
+nav_order: 1
+---
+
 # Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서
 
 ## 핵심 정리

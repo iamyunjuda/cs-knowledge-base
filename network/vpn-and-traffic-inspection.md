@@ -1,3 +1,9 @@
+---
+title: VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가
+parent: Network
+nav_order: 3
+---
+
 # VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가
 
 ## 핵심 정리
