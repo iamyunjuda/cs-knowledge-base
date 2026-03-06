@@ -21,3 +21,30 @@
   - VPN 프로토콜별 비교(PPTP~WireGuard), GFW의 L3/L4/L7 차단 메커니즘, DPI 심층 패킷 검사, 중국에서 되는 VPN vs 안 되는 VPN, Trojan/V2Ray 우회 원리
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
+
+---
+
+## Tistory 자동 포스팅
+
+main 브랜치에 마크다운 파일을 push하면 GitHub Actions가 자동으로 Tistory에 게시합니다.
+
+### 설정 방법 (1회)
+
+1. [Tistory Open API 앱 등록](https://www.tistory.com/guide/api/manage/register)에서 Access Token 발급
+2. GitHub repo → **Settings → Secrets and variables → Actions**에서 아래 2개 추가:
+   - `TISTORY_ACCESS_TOKEN`: 발급받은 토큰
+   - `TISTORY_BLOG_NAME`: 본인 블로그명 (예: `my-tech-blog`)
+3. [Google Search Console](https://search.google.com/search-console)에 `https://블로그명.tistory.com/sitemap.xml` 등록
+
+### 로컬에서 수동 실행
+
+```bash
+# 변환만 (output/ 폴더에 저장)
+python scripts/tistory-convert.py --all
+
+# Tistory API로 게시
+python scripts/tistory-convert.py --publish --all
+
+# 특정 파일만
+python scripts/tistory-convert.py --publish network/websocket-deep-dive.md
+```
