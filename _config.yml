@@ -1,63 +1,31 @@
 title: CS Knowledge Base
 description: 헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 블로그
-url: "" # GitHub Pages 배포 후 실제 URL로 변경 (예: https://username.github.io)
-baseurl: "/cs-knowledge-base" # repo 이름
+url: "https://iamyunjuda.github.io"
+baseurl: "/cs-knowledge-base"
 
 # 테마
-remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: just-the-docs/just-the-docs@v0.10.2
 
-# 마크다운 설정
+# 마크다운
 markdown: kramdown
 kramdown:
   input: GFM
   hard_wrap: false
   syntax_highlighter: rouge
 
-# SEO
+# 플러그인
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-remote-theme
 
-# front matter 없는 .md도 처리
-defaults:
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "default"
-  - scope:
-      path: "*.md"
-    values:
-      layout: "default"
-  - scope:
-      path: "java-jvm"
-    values:
-      layout: "default"
-  - scope:
-      path: "network"
-    values:
-      layout: "default"
-  - scope:
-      path: "spring"
-    values:
-      layout: "default"
-  - scope:
-      path: "os"
-    values:
-      layout: "default"
-  - scope:
-      path: "database"
-    values:
-      layout: "default"
-  - scope:
-      path: "data-structure"
-    values:
-      layout: "default"
-  - scope:
-      path: "design-pattern"
-    values:
-      layout: "default"
+# just-the-docs 설정
+color_scheme: light
+search_enabled: true
+search:
+  heading_level: 3
+heading_anchors: true
+footer_content: "CS Knowledge Base &mdash; 헷갈리기 쉬운 CS 지식 정리"
 
 # 빌드에서 제외
 exclude:
