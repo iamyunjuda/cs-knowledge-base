@@ -27,6 +27,17 @@ nav_order: 0
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
 
+---
+
+## 블로그 (GitHub Pages)
+
+이 저장소는 GitHub Pages로 자동 배포됩니다. main 브랜치에 push하면 자동으로 블로그가 업데이트됩니다.
+
+### 설정 방법 (1회)
+
+1. GitHub repo → **Settings → Pages → Source**에서 **GitHub Actions** 선택
+2. [Google Search Console](https://search.google.com/search-console)에 사이트맵 등록:
+   `https://USERNAME.github.io/cs-knowledge-base/sitemap.xml`
 ### Database
 
 - [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
