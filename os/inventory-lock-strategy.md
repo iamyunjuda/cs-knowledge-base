@@ -191,11 +191,35 @@ public class OrderService {
 
 #### 전략 1: 재시도 + Dead Letter Queue (DLQ)
 
+**DLQ가 필요한 이유: "Redis는 성공했는데 DB가 실패"하는 경우**
+
+```
+정상 흐름:
+  Redis DECR → 99 (✅ 재고 확보) → Kafka → Consumer → DB INSERT (✅)
+
+실패 흐름:
+  Redis DECR → 99 (✅ 재고 확보) → Kafka → Consumer → DB INSERT (❌ DB 장애!)
+  → Redis는 99인데 DB에는 주문이 없다
+  → 고객은 "주문 성공" 응답을 받았는데 실제로 처리 안 됨!
+```
+
+이때 Consumer가 할 수 있는 것:
+
 ```
 Kafka Consumer:
-  DB 업데이트 시도 → 실패 → 3회 재시도 → 여전히 실패
-  → DLQ(Dead Letter Queue)로 이동 → 운영팀 알림 → 수동 처리
+  DB INSERT 시도 → 실패 (DB 타임아웃)
+  → 재시도 1회 (2초 후) → 실패
+  → 재시도 2회 (4초 후) → 실패
+  → 재시도 3회 (8초 후) → 여전히 실패
+  → 이 메시지를 DLQ(Dead Letter Queue)로 이동
+  → 운영팀에 알림 발송
+  → DB 복구 후 DLQ 메시지를 다시 처리
+
+DLQ에 있는 메시지 = "Redis에서 재고는 차감했는데 DB 처리가 안 된 주문"
+→ 반드시 나중에라도 처리해야 한다 (고객이 돈을 냈으므로)
 ```
+
+**핵심: DLQ는 "앞단(Redis)에서 못 거른 것"이 아니라, "앞단은 통과했는데 뒷단(DB) 처리가 실패한 것"을 위한 안전망이다.** Redis에서 재고 차감이 실패하면 즉시 품절 응답을 주고 끝이지만, Redis는 성공했는데 DB가 실패하면 그 주문을 어딘가에 보관해야 한다. 그 "어딘가"가 DLQ다.
 
 #### 전략 2: Transactional Outbox 패턴
 
