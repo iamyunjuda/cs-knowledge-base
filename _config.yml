@@ -1,0 +1,69 @@
+title: CS Knowledge Base
+description: 헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 블로그
+url: "" # GitHub Pages 배포 후 실제 URL로 변경 (예: https://username.github.io)
+baseurl: "/cs-knowledge-base" # repo 이름
+
+# 테마
+remote_theme: pages-themes/cayman@v0.2.0
+
+# 마크다운 설정
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# SEO
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-remote-theme
+
+# front matter 없는 .md도 처리
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: "*.md"
+    values:
+      layout: "default"
+  - scope:
+      path: "java-jvm"
+    values:
+      layout: "default"
+  - scope:
+      path: "network"
+    values:
+      layout: "default"
+  - scope:
+      path: "spring"
+    values:
+      layout: "default"
+  - scope:
+      path: "os"
+    values:
+      layout: "default"
+  - scope:
+      path: "database"
+    values:
+      layout: "default"
+  - scope:
+      path: "data-structure"
+    values:
+      layout: "default"
+  - scope:
+      path: "design-pattern"
+    values:
+      layout: "default"
+
+# 빌드에서 제외
+exclude:
+  - CLAUDE.md
+  - .env
+  - .env.example
+  - output/
+  - scripts/
+  - __pycache__/
