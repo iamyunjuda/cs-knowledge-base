@@ -1,3 +1,9 @@
+---
+title: JVM 메모리 구조
+parent: Java / JVM
+nav_order: 2
+---
+
 # JVM 메모리 구조
 
 ## 핵심 정리

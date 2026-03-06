@@ -1,3 +1,8 @@
+---
+title: Home
+nav_order: 0
+---
+
 # CS Knowledge Base
 
 작성자가 매번 헷갈려하는 CS 지식들을 정리하는 저장소입니다.
@@ -37,3 +42,7 @@
 
 - [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
   - Cache Stampede(Thundering Herd) 현상 진단, TTL 지터, 분산 락, 논리적 만료, 인기 Key 사전 워밍 전략
+
+---
+
+<sub>이 저장소는 [GitHub Pages](https://iamyunjuda.github.io/cs-knowledge-base/)로 자동 배포됩니다. Settings → Pages → Source에서 GitHub Actions를 선택하세요.</sub>
