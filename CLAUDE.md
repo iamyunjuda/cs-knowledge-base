@@ -20,6 +20,7 @@
 - `infra/` - Kafka, Redis, Docker, 인프라 미들웨어 등
 - `blockchain/` - Web3, 이더리움, 지갑, 스마트 컨트랙트, DeFi 등
 - `design-pattern/` - 디자인 패턴, 아키텍처 등
+- `map-system/` - 공간 인덱싱, 지도 타일링, POI, 글로벌 로컬라이징, 지도 데이터 파이프라인 등
 
 ### 2. 마크다운 파일 생성
 - 파일명: 주제를 영문 kebab-case로 (예: `garbage-collection.md`)

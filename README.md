@@ -54,3 +54,14 @@
   - Lost Update, 비관적/낙관적 Lock, Redis DECR 재고 차감, Redis-DB 불일치 해결(DLQ/Outbox/Reconciliation), 장바구니 다중 차감(Lua/Saga), 면접 답변 전략
 - [컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가](os/container-vs-vm.md)
   - VM vs Container 구조 비교, Namespace/cgroups/OverlayFS, Docker와 K8s의 관계, 컨테이너 보안(gVisor/Kata), 컨테이너 런타임(containerd/CRI-O/Podman)
+
+### Map System / 지도 시스템
+
+- [공간 인덱싱과 지도 시스템 기초 — POI, 타일링, Geocoding](map-system/spatial-indexing-and-map-fundamentals.md)
+  - R-Tree/Geohash/S2/H3 공간 인덱싱, POI 데이터 모델, 지도 타일링(래스터/벡터), Geocoding/Reverse Geocoding, 경로 탐색 알고리즘(Dijkstra/A*/CH), PostGIS vs OpenSearch, 사우디 지도 특수성
+- [글로벌 로컬라이징 아키텍처 — i18n, L10n, 다국어/다지역 서비스 설계](map-system/global-localization-architecture.md)
+  - Locale 체계(BCP 47), API Locale 전달, 다국어 DB 저장 패턴(JSONB/번역 테이블), OpenSearch 다국어 분석기, 날짜/시간/통화 로컬라이징, RTL 아랍어 지원, L10n Layer 아키텍처, TMS 번역 관리
+- [대규모 지도 데이터 파이프라인 — 실시간/배치 처리, ETL, 데이터 모델링](map-system/map-data-pipeline.md)
+  - 지도 데이터 소스, Spark/Flink 배치·실시간 파이프라인, POI 중복 제거(Entity Resolution), CDC(Debezium), 영업시간 모델링, Lambda/Kappa 아키텍처, Map Matching, 데이터 품질 관리
+- [글로벌 트래픽 대응 아키텍처 — 멀티리전, CDN, 대규모 서비스 운영](map-system/global-traffic-architecture.md)
+  - 멀티리전 배포(Single-Writer + Read Replica), CDN 타일 캐싱 전략, API 성능 최적화, Circuit Breaker/Graceful Degradation, Rate Limiting, 분산 추적(OpenTelemetry), 해외 개발자 협업
