@@ -1,6 +1,6 @@
 # CS Knowledge Base
 
-헷갈리기 쉬운 CS 지식들을 정리하는 저장소입니다.
+작성자가 매번 헷갈려하는 CS 지식들을 정리하는 저장소입니다.
 
 ## 목차
 
@@ -33,3 +33,7 @@
 1. GitHub repo → **Settings → Pages → Source**에서 **GitHub Actions** 선택
 2. [Google Search Console](https://search.google.com/search-console)에 사이트맵 등록:
    `https://USERNAME.github.io/cs-knowledge-base/sitemap.xml`
+### Database
+
+- [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
+  - Cache Stampede(Thundering Herd) 현상 진단, TTL 지터, 분산 락, 논리적 만료, 인기 Key 사전 워밍 전략
