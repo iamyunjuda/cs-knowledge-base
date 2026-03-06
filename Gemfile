@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.3.4"
-gem "just-the-docs", "0.10.2"
+gem "jekyll", "~> 4.3"
+gem "just-the-docs"
 gem "jekyll-seo-tag"
 gem "jekyll-sitemap"
 gem "jekyll-feed"
