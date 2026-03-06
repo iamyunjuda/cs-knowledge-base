@@ -21,3 +21,8 @@
   - VPN 프로토콜별 비교(PPTP~WireGuard), GFW의 L3/L4/L7 차단 메커니즘, DPI 심층 패킷 검사, 중국에서 되는 VPN vs 안 되는 VPN, Trojan/V2Ray 우회 원리
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
+
+### Database
+
+- [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
+  - Cache Stampede(Thundering Herd) 현상 진단, TTL 지터, 분산 락, 논리적 만료, 인기 Key 사전 워밍 전략
