@@ -24,27 +24,12 @@
 
 ---
 
-## Tistory 자동 포스팅
+## 블로그 (GitHub Pages)
 
-main 브랜치에 마크다운 파일을 push하면 GitHub Actions가 자동으로 Tistory에 게시합니다.
+이 저장소는 GitHub Pages로 자동 배포됩니다. main 브랜치에 push하면 자동으로 블로그가 업데이트됩니다.
 
 ### 설정 방법 (1회)
 
-1. [Tistory Open API 앱 등록](https://www.tistory.com/guide/api/manage/register)에서 Access Token 발급
-2. GitHub repo → **Settings → Secrets and variables → Actions**에서 아래 2개 추가:
-   - `TISTORY_ACCESS_TOKEN`: 발급받은 토큰
-   - `TISTORY_BLOG_NAME`: 본인 블로그명 (예: `my-tech-blog`)
-3. [Google Search Console](https://search.google.com/search-console)에 `https://블로그명.tistory.com/sitemap.xml` 등록
-
-### 로컬에서 수동 실행
-
-```bash
-# 변환만 (output/ 폴더에 저장)
-python scripts/tistory-convert.py --all
-
-# Tistory API로 게시
-python scripts/tistory-convert.py --publish --all
-
-# 특정 파일만
-python scripts/tistory-convert.py --publish network/websocket-deep-dive.md
-```
+1. GitHub repo → **Settings → Pages → Source**에서 **GitHub Actions** 선택
+2. [Google Search Console](https://search.google.com/search-console)에 사이트맵 등록:
+   `https://USERNAME.github.io/cs-knowledge-base/sitemap.xml`
