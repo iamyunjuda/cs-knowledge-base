@@ -28,6 +28,10 @@
 
 ### OS / 운영체제
 
+- [CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프](os/ssd-hdd-ram-comparison.md)
+  - CPU 구조(Register/Cache/ALU), Cache Hit/Miss, HDD 물리적 한계(Seek/Rotation), SSD NAND Flash, SATA vs NVMe, RAM DRAM 동작, 저장장치 계층별 성능 비교, DB 인덱스/Redis/Kafka와의 연관
+- [epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프](os/epoll-kqueue-io-multiplexing.md)
+  - select/poll 한계, epoll 동작 원리(LT/ET), kqueue 차이점, io_uring 공유 메모리 링 버퍼, Nginx/Redis/Node.js/Netty가 사용하는 I/O 모델, libuv/mio 크로스 플랫폼 추상화
 - [비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux](os/async-processing-comparison.md)
   - Thread-per-Request vs Event Loop, Netty 구조, WebFlux(Reactor), Kotlin Coroutine suspend, Java Virtual Thread(Loom), 실무 선택 기준
 - [운영체제 구조와 커널(Kernel) 심화](os/kernel-and-os-structure.md)
