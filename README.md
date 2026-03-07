@@ -39,6 +39,8 @@
 
 - [Web3 / 지갑 / 이더리움 네트워크 생태계 — 백엔드 개발자를 위한 총정리](blockchain/web3-ethereum-ecosystem.md)
   - Web2 vs Web3 차이, 이더리움 구조(EVM/Gas/EIP-1559), EOA/CA 계정 체계, HD Wallet(BIP-39/44), 스마트 컨트랙트(Solidity), DeFi/NFT/ERC 토큰 표준, L2(Optimistic/ZK Rollup), SIWE 인증, 이벤트 인덱싱, 트랜잭션 관리, 참고 레포 정리
+- [블록체인 Tx 엣지 케이스 — 패턴을 넘어 실전에서 터지는 것들](blockchain/blockchain-tx-edge-cases.md)
+  - Tx 상태 불확실성(Pending/Lost 복구), Reorg 감지·대응(Confirmation 단계별 처리), Nonce Gap/충돌(NonceManager, 멀티 월렛 풀), RPC 노드 장애(멀티 RPC 폴백), EIP-1559 가스비 급등(동적 계산, 큐잉), 서비스별 전략 차이, Gap Recovery
 
 ### OS / 운영체제
 
