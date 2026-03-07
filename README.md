@@ -30,6 +30,10 @@
 
 - [Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리](infra/kafka-deep-dive.md)
   - Partition 기반 순서 보장, Partition Key, acks(0/1/all), ISR, enable.idempotence, Consumer offset 관리(auto/manual), At Least Once/Exactly Once, Rebalancing, CooperativeStickyAssignor, 실무 설정 가이드
+- [캐싱 전략 심층 분석 — 호텔 예약 vs 콘서트/쿠폰 시스템](infra/cache-strategy-hotel-vs-concert.md)
+  - 멀티 레이어 캐싱(L1 Local/L2 Redis/L3 DB), 캐시 무효화 흐름(DEL+Kafka evict), Stale 윈도우, Cache Stampede 방지(setNx+spin retry), 호텔(읽기 heavy→캐시) vs 콘서트(쓰기 heavy→Redis DECR), Lua Script 중복 방지, Redis 멀티 노드 동시성 보장
+- [Redis 장애 시나리오 분석 및 대응 전략 — 10만 트래픽 호텔 예약 시스템](infra/redis-failure-strategies.md)
+  - Redis 4가지 용도(캐시/분산락/Rate Limit/세션), 장애 시나리오(완전 다운/Slow Redis/부분 장애), Circuit Breaker(Resilience4j), 2-Tier 캐싱(Caffeine+Redis), 분산 락 폴백(DB 비관적 락 유지), Redis Sentinel vs Cluster, 장애 대응 플레이북
 
 ### Blockchain / Web3
 
@@ -54,6 +58,11 @@
   - Lost Update, 비관적/낙관적 Lock, Redis DECR 재고 차감, Redis-DB 불일치 해결(DLQ/Outbox/Reconciliation), 장바구니 다중 차감(Lua/Saga), 면접 답변 전략
 - [컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가](os/container-vs-vm.md)
   - VM vs Container 구조 비교, Namespace/cgroups/OverlayFS, Docker와 K8s의 관계, 컨테이너 보안(gVisor/Kata), 컨테이너 런타임(containerd/CRI-O/Podman)
+
+### Design Pattern / 설계 패턴
+
+- [분산 시스템 핵심 패턴 — 동시성, 트랜잭션, 메시징, 데이터 정합성](design-pattern/distributed-system-patterns.md)
+  - 비관적/낙관적/분산 락, ACID vs BASE, 2PC/Saga/Outbox 패턴, 전달 보장 모델(At-Least-Once), 멱등성, Block Finality/Nonce/ERC-20/HD Wallet/Gas, Circuit Breaker/CEI/Graceful Degradation, Reconciliation/Source of Truth/Eventual Consistency, CAP 정리, Node.js 이벤트 루프, Reentrancy 공격
 
 ### Map System / 지도 시스템
 
