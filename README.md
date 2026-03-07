@@ -30,8 +30,8 @@
 
 - [Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리](infra/kafka-deep-dive.md)
   - Partition 기반 순서 보장, Partition Key, acks(0/1/all), ISR, enable.idempotence, Consumer offset 관리(auto/manual), At Least Once/Exactly Once, Rebalancing, CooperativeStickyAssignor, 실무 설정 가이드
-- [Traffic Mirroring & Canary 배포 — 리팩토링 검증과 무중단 배포의 깊은 이해](infra/traffic-mirroring-canary-deployment.md)
-  - Traffic Mirroring 동작 원리와 한계(부작용 요청, 리소스 부하, 타이밍 불일치), Canary 배포 단계별 전략, 버전 간 데이터 스키마/세션/캐시 불일치 문제와 대응(Expand-Contract 패턴), 자동 롤백, Istio/Argo Rollouts 설정 예시
+- [Traffic Mirroring, Blue-Green, Canary 배포 — 검증과 무중단 배포 전략 총정리](infra/traffic-mirroring-canary-deployment.md)
+  - Traffic Mirroring 동작 원리와 한계, Blue-Green 배포 검증 방법과 문제 상황(리소스 2배, 빅뱅 위험, DB 마이그레이션), Canary 단계별 전략과 문제 대응(Expand-Contract 패턴, 세션/캐시 불일치), 실무 소프트웨어별 Blue-Green vs Canary 선택 기준, Istio/Argo Rollouts 설정 예시
 
 ### OS / 운영체제
 
