@@ -39,6 +39,8 @@
   - select/poll 한계, epoll 동작 원리(LT/ET), kqueue 차이점, io_uring 공유 메모리 링 버퍼, Nginx/Redis/Node.js/Netty가 사용하는 I/O 모델, libuv/mio 크로스 플랫폼 추상화
 - [비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux](os/async-processing-comparison.md)
   - Thread-per-Request vs Event Loop, Netty 구조, WebFlux(Reactor), Kotlin Coroutine suspend, Java Virtual Thread(Loom), 실무 선택 기준
+- [언어별 비동기 구현 방식 — 내부 동작 원리부터 프레임워크 주의점까지](os/async-patterns-by-language.md)
+  - JS/Node.js(Event Loop, libuv), Python(asyncio, GIL), Go(Goroutine, GMP), Java(CompletableFuture, Virtual Thread), Kotlin(Structured Concurrency), C#(async/await, SynchronizationContext), Rust(Future, tokio), 리액티브 프로그래밍(Reactive Streams, Backpressure, Mono/Flux, RxJS, Kotlin Flow), 프레임워크별 주의점
 - [운영체제 구조와 커널(Kernel) 심화](os/kernel-and-os-structure.md)
   - 유저 모드 vs 커널 모드, CPU Ring 구조, 커널 구성 요소(프로세스/메모리/파일시스템/네트워크), Monolithic vs Microkernel, Linux 커널과 컨테이너 기술의 관계
 - [커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장](os/kernel-easy-guide.md)
