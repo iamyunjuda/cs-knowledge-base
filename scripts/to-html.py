@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """
 마크다운 파일을 티스토리 붙여넣기용 HTML로 변환하는 스크립트.
+기본적으로 output/ 폴더에 같은 이름의 .html 파일로 저장됩니다.
 
 사용법:
   python scripts/to-html.py topics/network/http-tcp-relationship.md
-  python scripts/to-html.py topics/network/http-tcp-relationship.md -o output.html
-  python scripts/to-html.py topics/network/http-tcp-relationship.md --open  # 브라우저에서 미리보기
+    → output/http-tcp-relationship.html 저장
+
+  python scripts/to-html.py topics/network/http-tcp-relationship.md -o custom.html
+    → 지정 경로에 저장
+
+  python scripts/to-html.py topics/network/http-tcp-relationship.md --open
+    → 브라우저에서 미리보기
 """
 
 import argparse
@@ -94,9 +100,10 @@ def convert(md_path: Path) -> tuple[str, str]:
 def main():
     parser = argparse.ArgumentParser(description="마크다운 → 티스토리 HTML 변환")
     parser.add_argument("file", help="변환할 마크다운 파일 경로")
-    parser.add_argument("-o", "--output", help="HTML 출력 파일 경로 (미지정 시 stdout)")
+    parser.add_argument("-o", "--output", help="HTML 출력 파일 경로 (미지정 시 output/ 폴더에 자동 저장)")
     parser.add_argument("--open", action="store_true", help="브라우저에서 미리보기")
     parser.add_argument("--full", action="store_true", help="style 태그 포함 전체 HTML 출력")
+    parser.add_argument("--stdout", action="store_true", help="파일 저장 대신 stdout으로 출력")
     args = parser.parse_args()
 
     md_path = Path(args.file)
@@ -123,12 +130,18 @@ def main():
         webbrowser.open(f"file://{tmp.name}")
         print(f"미리보기: {tmp.name}")
 
-    if args.output:
-        out_path = Path(args.output)
+    if args.stdout:
+        print(tistory_html)
+    elif not args.open:
+        # 기본: output/ 폴더에 자동 저장
+        if args.output:
+            out_path = Path(args.output)
+        else:
+            out_dir = REPO_ROOT / "output"
+            out_dir.mkdir(exist_ok=True)
+            out_path = out_dir / f"{md_path.stem}.html"
         out_path.write_text(tistory_html, encoding="utf-8")
         print(f"저장 완료: {out_path}")
-    elif not args.open:
-        print(tistory_html)
 
 
 if __name__ == "__main__":
