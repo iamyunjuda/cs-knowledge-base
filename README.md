@@ -25,6 +25,8 @@
   - Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
+- [BLE 기반 친구 탐지 앱 — 블루투스 근접 감지, 거리 측정, 방향 표시의 기술 원리](network/bluetooth-friend-locator.md)
+  - BLE Advertising/Scanning, RSSI 기반 거리 추정(칼만 필터), GPS 좌표 교환 방위각 계산, UWB(AoA/ToF), iOS iBeacon Region Monitoring, Android CompanionDeviceManager, WidgetKit/Live Activity, 백그라운드 BLE 스캔 전략
 
 ### Database
 
