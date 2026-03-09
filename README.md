@@ -26,6 +26,11 @@
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
 
+### Database
+
+- [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
+  - Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략
+
 ### Infra / 인프라 미들웨어
 
 - [Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리](infra/kafka-deep-dive.md)

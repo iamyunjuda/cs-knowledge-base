@@ -18,29 +18,49 @@ permalink: /
 
 | 주제 | 키워드 |
 |:-----|:-------|
-| [JVM 동작 원리 — 다른 언어와의 비교 및 버전별 변화]({{ site.baseurl }}/java-jvm/jvm-internals.html) | HotSpot Tiered Compilation, 실행 모델 비교, Java 버전별 변화 |
-| [JVM 메모리 구조]({{ site.baseurl }}/java-jvm/jvm-memory-structure.html) | Heap, G1GC, ZGC, Metaspace, String Pool, OOM 에러 |
+| [JVM 동작 원리 — 다른 언어와의 비교 및 버전별 변화]({{ site.baseurl }}/java-jvm/jvm-internals.html) | JVM의 코드 실행 과정, HotSpot Tiered Compilation, 다른 언어(C/C++, Python, C#, Go, JS)와의 실행 모델 비교, Java 버전별 JVM 주요 변화 |
+| [JVM 메모리 구조]({{ site.baseurl }}/java-jvm/jvm-memory-structure.html) | Heap(세대별 구조, G1GC, ZGC), Method Area, JVM Stack, String Pool, Direct Memory, 주요 OOM 에러 정리 |
 
 ### Network
 
 | 주제 | 키워드 |
 |:-----|:-------|
-| [HTTP/HTTPS와 TCP의 관계]({{ site.baseurl }}/network/http-tcp-relationship.html) | 프로토콜 계층, localhost, DNS 해석, hosts 파일 |
-| [L4 / L7 로드밸런서 — 차이점과 실무 선택 기준]({{ site.baseurl }}/network/l4-l7-load-balancer.html) | NAT/DSR, TLS 종료, K8s Ingress, AWS NLB vs ALB |
-| [VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가]({{ site.baseurl }}/network/vpn-and-traffic-inspection.html) | VPN 프로토콜 비교, DPI, Trojan/V2Ray 우회 |
-| [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지]({{ site.baseurl }}/network/websocket-deep-dive.html) | WebSocket 프레임, 스레드 모델, Sticky Session, 스케일링 |
+| [HTTP/HTTPS와 TCP의 관계]({{ site.baseurl }}/network/http-tcp-relationship.html) | TCP 위에서 동작하는 HTTP/HTTPS/WebSocket, 프로토콜 계층 구조, localhost와 DNS 해석 순서, hosts 파일 활용 |
+| [L4 / L7 로드밸런서 — 차이점과 실무 선택 기준]({{ site.baseurl }}/network/l4-l7-load-balancer.html) | L4 vs L7 동작 차이, NAT/DSR 방식, TLS 종료, K8s Service+Ingress 구조, AWS NLB vs ALB 선택 기준, gRPC 로드밸런싱 |
+| [VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가]({{ site.baseurl }}/network/vpn-and-traffic-inspection.html) | VPN 프로토콜별 비교, GFW의 L3/L4/L7 차단 메커니즘, DPI 심층 패킷 검사, 중국에서 되는 VPN vs 안 되는 VPN, Trojan/V2Ray 우회 원리 |
+| [프록시(Proxy)와 리버스 프록시(Reverse Proxy)]({{ site.baseurl }}/network/proxy-reverse-proxy.html) | Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시 |
+| [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지]({{ site.baseurl }}/network/websocket-deep-dive.html) | WebSocket 연결/프레임 구조, 스레드 모델, K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown) |
 
 ### Database
 
 | 주제 | 키워드 |
 |:-----|:-------|
-| [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서]({{ site.baseurl }}/database/cache-stampede-solving.html) | Thundering Herd, TTL 지터, 분산 락, 사전 워밍 |
+| [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서]({{ site.baseurl }}/database/cache-stampede-solving.html) | Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략 |
+
+### Infra / 인프라 미들웨어
+
+| 주제 | 키워드 |
+|:-----|:-------|
+| [Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리]({{ site.baseurl }}/infra/kafka-deep-dive.html) | Partition 기반 순서 보장, Partition Key, acks, ISR, enable.idempotence, Consumer offset 관리, At Least Once/Exactly Once, Rebalancing, CooperativeStickyAssignor, 실무 설정 가이드 |
+
+### OS / 운영체제
+
+| 주제 | 키워드 |
+|:-----|:-------|
+| [CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프]({{ site.baseurl }}/os/ssd-hdd-ram-comparison.html) | CPU 구조, Cache Hit/Miss, HDD 물리적 한계, SSD NAND Flash, SATA vs NVMe, RAM DRAM 동작, 저장장치 계층별 성능 비교, DB 인덱스/Redis/Kafka와의 연관 |
+| [epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프]({{ site.baseurl }}/os/epoll-kqueue-io-multiplexing.html) | select/poll 한계, epoll 동작 원리, kqueue 차이점, io_uring 공유 메모리 링 버퍼, Nginx/Redis/Node.js/Netty가 사용하는 I/O 모델, libuv/mio 크로스 플랫폼 추상화 |
+| [비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux]({{ site.baseurl }}/os/async-processing-comparison.html) | Thread-per-Request vs Event Loop, Netty 구조, WebFlux, Kotlin Coroutine suspend, Java Virtual Thread, 실무 선택 기준 |
+| [운영체제 구조와 커널(Kernel) 심화]({{ site.baseurl }}/os/kernel-and-os-structure.html) | 유저 모드 vs 커널 모드, CPU Ring 구조, 커널 구성 요소, Monolithic vs Microkernel, Linux 커널과 컨테이너 기술의 관계 |
+| [커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장]({{ site.baseurl }}/os/kernel-easy-guide.html) | 커널의 5가지 역할, 유저 모드 vs 커널 모드 쉬운 설명, System Call, Java/Spring 개발자가 알아야 하는 커널 이슈 |
+| [이벤트 기반 시스템에서의 Lock 처리 — 초고트래픽 환경의 동시성 제어]({{ site.baseurl }}/os/event-driven-locking.html) | 분산 Lock, 0.000001초 차이 요청 처리, 원자적 연산, 메시지 큐 직렬화, Fencing Token, 선착순 쿠폰 발급 설계 |
+| [재고 동기화와 Lock 전략 — 이커머스 동시성 문제의 모든 것]({{ site.baseurl }}/os/inventory-lock-strategy.html) | Lost Update, 비관적/낙관적 Lock, Redis DECR 재고 차감, Redis-DB 불일치 해결, 장바구니 다중 차감, 면접 답변 전략 |
+| [컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가]({{ site.baseurl }}/os/container-vs-vm.html) | VM vs Container 구조 비교, Namespace/cgroups/OverlayFS, Docker와 K8s의 관계, 컨테이너 보안, 컨테이너 런타임 |
 
 ### Git
 
 | 주제 | 키워드 |
 |:-----|:-------|
-| [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준]({{ site.baseurl }}/git/merge-strategies.html) | Merge Commit, Rebase, Squash, 커밋 보존, 히스토리 전략, git bisect |
+| [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준]({{ site.baseurl }}/git/merge-strategies.html) | Merge Commit / Rebase Merge / Squash Merge 비교, 커밋 보존 여부, 히스토리 형태 차이, Squash 후 브랜치 삭제 이유, 실무 전략 선택 기준 |
 
 ---
 
