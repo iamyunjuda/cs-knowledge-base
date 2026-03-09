@@ -36,6 +36,12 @@ permalink: /
 |:-----|:-------|
 | [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서]({{ site.baseurl }}/database/cache-stampede-solving.html) | Thundering Herd, TTL 지터, 분산 락, 사전 워밍 |
 
+### Git
+
+| 주제 | 키워드 |
+|:-----|:-------|
+| [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준]({{ site.baseurl }}/git/merge-strategies.html) | Merge Commit, Rebase, Squash, 커밋 보존, 히스토리 전략, git bisect |
+
 ---
 
 <sub>이 저장소는 [GitHub Pages](https://iamyunjuda.github.io/cs-knowledge-base/)로 자동 배포됩니다.</sub>

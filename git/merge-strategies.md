@@ -1,3 +1,10 @@
+---
+title: Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준
+parent: Git
+nav_order: 1
+---
+
+
 # Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준
 
 ## 핵심 정리
