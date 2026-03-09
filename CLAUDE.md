@@ -19,6 +19,7 @@
 - `data-structure/` - 자료구조, 알고리즘 등
 - `infra/` - Kafka, Redis, Docker, 인프라 미들웨어 등
 - `design-pattern/` - 디자인 패턴, 아키텍처 등
+- `git/` - Git 명령어, 브랜치 전략, 병합 방식 등
 
 ### 2. 마크다운 파일 생성
 - 파일명: 주제를 영문 kebab-case로 (예: `garbage-collection.md`)
