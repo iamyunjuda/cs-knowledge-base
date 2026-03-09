@@ -18,8 +18,10 @@
 - `database/` - SQL, 인덱스, 트랜잭션, DB 설계 등
 - `data-structure/` - 자료구조, 알고리즘 등
 - `infra/` - Kafka, Redis, Docker, 인프라 미들웨어 등
+- `blockchain/` - Web3, 이더리움, 지갑, 스마트 컨트랙트, DeFi 등
 - `design-pattern/` - 디자인 패턴, 아키텍처 등
 - `git/` - Git 명령어, 브랜치 전략, 병합 방식 등
+- `map-system/` - 공간 인덱싱, 지도 타일링, POI, 글로벌 로컬라이징, 지도 데이터 파이프라인 등
 
 ### 2. 마크다운 파일 생성
 - 파일명: 주제를 영문 kebab-case로 (예: `garbage-collection.md`)
