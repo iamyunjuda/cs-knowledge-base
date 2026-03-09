@@ -29,6 +29,9 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
 
+      - name: README → index.md 목차 동기화
+        run: python3 scripts/sync-toc.py
+
       - name: Jekyll 빌드
         run: bundle exec jekyll build --destination ./_site
         env:
