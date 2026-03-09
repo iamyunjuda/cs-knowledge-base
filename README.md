@@ -25,6 +25,8 @@
   - Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
+- [Nostr 릴레이 탐색과 지오로케이션 — GeoRelays 프로젝트 분석](network/nostr-relay-discovery-georelays.md)
+  - Nostr 프로토콜 구조, BFS 기반 릴레이 크롤링(kind 3/10002), WebSocket 프로토콜 수준 검증, BitChat(kind 20000) 필터링, IP 지오로케이션(DB-IP + Binary Search), GitHub Actions 워크플로우 체인, Cartopy/Folium 시각화
 
 ### Database
 
