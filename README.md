@@ -1,28 +1,8 @@
 # CS Knowledge Base
 
-> 면접에서 "아 그거 뭐였더라..." 하지 않기 위한, 헷갈리기 쉬운 CS 지식 정리 저장소
-
-실무에서 마주치는 개념들 중 **한 번 보면 알 것 같은데 막상 설명하려면 막히는 것들**을 직접 정리합니다.
-교과서식 나열이 아니라, **"뭐가 헷갈렸고 → 왜 그런 거였고 → 어떻게 정리했는지"** 흐름으로 작성합니다.
+헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 저장소입니다.
 
 📖 **블로그**: [https://iamyunjuda.github.io/cs-knowledge-base/](https://iamyunjuda.github.io/cs-knowledge-base/)
-
-### 다루는 범위
-
-| 카테고리 | 키워드 |
-|---------|-------|
-| **Java / JVM** | JVM 구조, GC, 메모리, HotSpot |
-| **Spring** | Bean, AOP, Spring Boot |
-| **Network** | HTTP, TCP, WebSocket, BLE, VPN, 로드밸런서 |
-| **OS** | 프로세스, 비동기, I/O 멀티플렉싱, 컨테이너 |
-| **Database** | 인덱스, 트랜잭션, 캐시 전략 |
-| **Infra** | Kafka, Redis, Docker |
-| **Blockchain** | 이더리움, 스마트 컨트랙트, Tx 관리 |
-| **Design Pattern** | 분산 시스템 패턴, Saga, Outbox |
-| **Git** | 병합 전략, Rebase vs Squash |
-| **Map System** | 공간 인덱싱, 타일링, 글로벌 아키텍처 |
-
----
 
 ## 목차
 
@@ -45,8 +25,8 @@
   - Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
-- [BLE 기반 친구 탐지 앱 — 블루투스 근접 감지, 거리 측정, 방향 표시의 기술 원리](network/bluetooth-friend-locator.md)
-  - BLE Advertising/Scanning, RSSI 기반 거리 추정(칼만 필터), GPS 좌표 교환 방위각 계산, UWB(AoA/ToF), iOS iBeacon Region Monitoring, Android CompanionDeviceManager, WidgetKit/Live Activity, 백그라운드 BLE 스캔 전략
+- [Nostr 릴레이 탐색과 지오로케이션 — GeoRelays 프로젝트 분석](network/nostr-relay-discovery-georelays.md)
+  - Nostr 프로토콜 구조, BFS 기반 릴레이 크롤링(kind 3/10002), WebSocket 프로토콜 수준 검증, BitChat(kind 20000) 필터링, IP 지오로케이션(DB-IP + Binary Search), GitHub Actions 워크플로우 체인, Cartopy/Folium 시각화
 
 ### Database
 
