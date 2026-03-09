@@ -1,8 +1,28 @@
 # CS Knowledge Base
 
-헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 저장소입니다.
+> 면접에서 "아 그거 뭐였더라..." 하지 않기 위한, 헷갈리기 쉬운 CS 지식 정리 저장소
+
+실무에서 마주치는 개념들 중 **한 번 보면 알 것 같은데 막상 설명하려면 막히는 것들**을 직접 정리합니다.
+교과서식 나열이 아니라, **"뭐가 헷갈렸고 → 왜 그런 거였고 → 어떻게 정리했는지"** 흐름으로 작성합니다.
 
 📖 **블로그**: [https://iamyunjuda.github.io/cs-knowledge-base/](https://iamyunjuda.github.io/cs-knowledge-base/)
+
+### 다루는 범위
+
+| 카테고리 | 키워드 |
+|---------|-------|
+| **Java / JVM** | JVM 구조, GC, 메모리, HotSpot |
+| **Spring** | Bean, AOP, Spring Boot |
+| **Network** | HTTP, TCP, WebSocket, BLE, VPN, 로드밸런서 |
+| **OS** | 프로세스, 비동기, I/O 멀티플렉싱, 컨테이너 |
+| **Database** | 인덱스, 트랜잭션, 캐시 전략 |
+| **Infra** | Kafka, Redis, Docker |
+| **Blockchain** | 이더리움, 스마트 컨트랙트, Tx 관리 |
+| **Design Pattern** | 분산 시스템 패턴, Saga, Outbox |
+| **Git** | 병합 전략, Rebase vs Squash |
+| **Map System** | 공간 인덱싱, 타일링, 글로벌 아키텍처 |
+
+---
 
 ## 목차
 
