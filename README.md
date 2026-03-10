@@ -32,6 +32,8 @@
   - Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략
 - [MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략](database/mongodb-replication-optimization.md)
   - mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null/missing 인덱스 처리(Partial/Sparse Index), Replica Set 복제 지연 원인 분석, Causal Consistency Session, Write-Through Cache, CQRS, Change Stream 실시간 전략
+- [MongoDB 세션 관리 심화 — RDB 커넥션과의 근본적 차이, Spring Data MongoDB 실전](database/mongodb-session-management.md)
+  - RDB 커넥션=세션(1:1) vs MongoDB lsid 기반 논리 세션(N:M), 커넥션 풀 동작 차이, 암시적/명시적 세션, MongoTemplate+ClientSession, @Transactional, Causal Consistency Session, Reactive 환경, 세션 누수 방지, Sharded 트랜잭션 주의점
 
 ### Infra / 인프라 미들웨어
 
