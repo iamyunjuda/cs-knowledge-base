@@ -30,6 +30,8 @@
 
 - [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
   - Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략
+- [MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략](database/mongodb-replication-optimization.md)
+  - mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null/missing 인덱스 처리(Partial/Sparse Index), Replica Set 복제 지연 원인 분석, Causal Consistency Session, Write-Through Cache, CQRS, Change Stream 실시간 전략
 
 ### Infra / 인프라 미들웨어
 
