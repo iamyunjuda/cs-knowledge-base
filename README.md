@@ -48,6 +48,22 @@
   - Web2 vs Web3 차이, 이더리움 구조(EVM/Gas/EIP-1559), EOA/CA 계정 체계, HD Wallet(BIP-39/44), 스마트 컨트랙트(Solidity), DeFi/NFT/ERC 토큰 표준, L2(Optimistic/ZK Rollup), SIWE 인증, 이벤트 인덱싱, 트랜잭션 관리, 참고 레포 정리
 - [블록체인 Tx 엣지 케이스 — 패턴을 넘어 실전에서 터지는 것들](blockchain/blockchain-tx-edge-cases.md)
   - Tx 상태 불확실성(Pending/Lost 복구), Reorg 감지·대응(Confirmation 단계별 처리), Nonce Gap/충돌(NonceManager, 멀티 월렛 풀), RPC 노드 장애(멀티 RPC 폴백), EIP-1559 가스비 급등(동적 계산, 큐잉), 서비스별 전략 차이, Gap Recovery
+- [블록체인 서비스 DB 스키마 설계 — 트랜잭션 무결성과 정합성](blockchain/blockchain-db-schema-design.md)
+  - Tx 테이블(멱등성 키, 상태 전이 이력), 지갑/입금 주소 관리, 이벤트 인덱싱 스키마, 잔액 원장(이중 기장), Outbox 패턴, 비관적 잠금, Reconciliation, NUMERIC(78,0), 인덱스/파티셔닝 전략
+- [블록체인 모니터링 시스템 — 설계, 지표, 알림, 운영](blockchain/blockchain-monitoring-system.md)
+  - Tx 상태/Nonce/가스비/지갑 잔액/RPC/이벤트 리스너 모니터링 지표, Prometheus+Grafana 아키텍처, 알림 등급(P1~P3) 설계, 대시보드 레이아웃, 온체인 감시(Defender/Forta), 백오피스 연동, 인시던트 대응 플레이북
+- [합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality](blockchain/consensus-mechanisms.md)
+  - PoW 채굴/난이도 조정/51% 공격, PoS Validator/Slashing/Epoch, PoW vs PoS 비교, Block Finality(확률적 vs 결정적), Reorg 심화(PoS Reorg, 감지 시스템), DPoS/PBFT/PoA/PoH, The Merge 전후 변화
+- [ERC 토큰 표준 심화 — ERC-20, 721, 1155, 4337, 백엔드 구현](blockchain/erc-token-standards.md)
+  - ERC-20(approve/transferFrom, decimals 함정, 비표준 토큰), ERC-721(NFT, tokenURI, 메타데이터), ERC-1155(멀티 토큰, 배치 전송, 가스 효율), ERC-4337(계정 추상화, Bundler, Paymaster), ERC-2612(Permit), 거래소 토큰 상장 체크리스트
+- [풀노드 운영 — Geth, OpenEthereum(Parity), 동기화, 유지보수](blockchain/full-node-operations.md)
+  - Full/Archive/Light Node 차이, Geth 설치·설정·동기화 모드(snap/full/archive), Execution+Consensus 클라이언트, 하드웨어 요구사항, Pruning, 하드포크 대응, JSON-RPC 보안 설정, 멀티노드 아키텍처, 클라이언트 다양성
+- [키 관리 및 보안 시스템 — KMS, HSM, MPC, 서명 아키텍처](blockchain/key-management-security.md)
+  - HSM 물리적 보안, AWS/GCP KMS 서명 흐름, MPC(TSS/DKG) vs 멀티시그, Hot/Warm/Cold Wallet 계층 구조, 서명 파이프라인(Policy Engine), 키 순환, 보안 감사, 실제 사고 사례(Ronin/Atomic/Slope)
+- [스마트 컨트랙트 & dApp 개발 — 개발 라이프사이클, 테스트, 보안, 배포](blockchain/smart-contract-dapp-development.md)
+  - Hardhat vs Foundry, 테스트 전략(유닛/Fuzz/Invariant/Fork), 보안 취약점(Reentrancy/Flash Loan/Access Control), CEI 패턴, Proxy 업그레이드(UUPS/Transparent), dApp 백엔드 아키텍처, The Graph, Meta-Transaction, Solidity Clean Code
+- [VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수](blockchain/vasp-wallet-operations.md)
+  - VASP 정의/유형, 거래소 지갑 구조(Sweep/Omnibus), 입출금 처리 플로우, Travel Rule(FATF/특금법/CODE/VerifyVASP), AML/KYC 연동, 주소 귀속 확인, 거래소 백엔드 시스템 구성, 멀티체인 지원
 
 ### OS / 운영체제
 
