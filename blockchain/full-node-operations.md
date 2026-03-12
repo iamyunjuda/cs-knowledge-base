@@ -1,3 +1,9 @@
+---
+title: "풀노드 운영 — Geth, OpenEthereum(Parity), 동기화, 유지보수"
+parent: Blockchain / Web3
+nav_order: 7
+---
+
 # 풀노드 운영 — Geth, OpenEthereum(Parity), 동기화, 유지보수
 
 ## 핵심 정리

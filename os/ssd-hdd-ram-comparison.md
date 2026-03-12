@@ -1,3 +1,9 @@
+---
+title: "CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프"
+parent: OS / 운영체제
+nav_order: 1
+---
+
 # CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프
 
 ## 핵심 정리

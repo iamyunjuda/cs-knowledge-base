@@ -1,3 +1,9 @@
+---
+title: "프록시(Proxy)와 리버스 프록시(Reverse Proxy)"
+parent: Network
+nav_order: 5
+---
+
 # 프록시(Proxy)와 리버스 프록시(Reverse Proxy)
 
 ## 핵심 정리

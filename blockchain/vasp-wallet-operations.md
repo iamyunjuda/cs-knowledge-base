@@ -1,3 +1,9 @@
+---
+title: "VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수"
+parent: Blockchain / Web3
+nav_order: 10
+---
+
 # VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수
 
 ## 핵심 정리
