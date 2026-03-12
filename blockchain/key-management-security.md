@@ -1,3 +1,9 @@
+---
+title: "키 관리 및 보안 시스템 — KMS, HSM, MPC, 서명 아키텍처"
+parent: Blockchain / Web3
+nav_order: 8
+---
+
 # 키 관리 및 보안 시스템 — KMS, HSM, MPC, 서명 아키텍처
 
 ## 핵심 정리

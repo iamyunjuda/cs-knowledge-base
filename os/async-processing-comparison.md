@@ -1,3 +1,9 @@
+---
+title: "비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux"
+parent: OS / 운영체제
+nav_order: 3
+---
+
 # 비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux 그리고 그 이면
 
 ## 핵심 정리

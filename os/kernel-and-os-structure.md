@@ -1,3 +1,9 @@
+---
+title: "운영체제 구조와 커널(Kernel) 심화"
+parent: OS / 운영체제
+nav_order: 5
+---
+
 # 운영체제 구조와 커널(Kernel) 심화
 
 ## 핵심 정리

@@ -1,3 +1,9 @@
+---
+title: "합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality"
+parent: Blockchain / Web3
+nav_order: 5
+---
+
 # 합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality
 
 ## 핵심 정리
