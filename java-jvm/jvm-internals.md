@@ -2,6 +2,8 @@
 title: JVM 동작 원리 — 다른 언어와의 비교 및 버전별 변화
 parent: Java / JVM
 nav_order: 1
+tags: [JVM, HotSpot, JIT, 컴파일, 바이트코드, Tiered Compilation, GraalVM, Java실행]
+description: "JVM의 코드 실행 과정, HotSpot Tiered Compilation, C/C++·Python·Go·JS와의 실행 모델 비교, Java 버전별 JVM 주요 변화를 정리합니다."
 ---
 
 # JVM 동작 원리 — 다른 언어와의 비교 및 버전별 변화

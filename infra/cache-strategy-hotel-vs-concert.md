@@ -2,6 +2,8 @@
 title: "캐싱 전략 심층 분석 — 호텔 예약 vs 콘서트/쿠폰 시스템"
 parent: Infra / 인프라 미들웨어
 nav_order: 2
+tags: [캐싱전략, Redis, Lua Script, 멀티레이어캐시, 재고차감, DECR, Cache Stampede]
+description: "멀티 레이어 캐싱, Cache Stampede 방지, 호텔(읽기 heavy) vs 콘서트(쓰기 heavy) 캐싱 전략 차이, Redis Lua Script 활용을 정리합니다."
 ---
 
 # 캐싱 전략 심층 분석 — 호텔 예약 vs 콘서트/쿠폰 시스템

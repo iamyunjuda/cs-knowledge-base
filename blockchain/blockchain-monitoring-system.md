@@ -2,6 +2,8 @@
 title: "블록체인 모니터링 시스템 — 설계, 지표, 알림, 운영"
 parent: Blockchain / Web3
 nav_order: 4
+tags: [모니터링, Prometheus, Grafana, 알림, Nonce, 가스비, RPC, 대시보드]
+description: "Tx 상태/Nonce/가스비/RPC 모니터링 지표, Prometheus+Grafana 아키텍처, 알림 등급 설계, 인시던트 대응 플레이북을 정리합니다."
 ---
 
 # 블록체인 모니터링 시스템 — 설계, 지표, 알림, 운영

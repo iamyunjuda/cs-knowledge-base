@@ -2,6 +2,8 @@
 title: "CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프"
 parent: OS / 운영체제
 nav_order: 1
+tags: [CPU, RAM, SSD, HDD, Cache, DRAM, NVMe, SATA, 저장장치]
+description: "CPU Cache Hit/Miss, HDD 물리적 한계, SSD NAND Flash, SATA vs NVMe, RAM DRAM 동작, 저장장치 계층별 성능 비교를 정리합니다."
 ---
 
 # CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프

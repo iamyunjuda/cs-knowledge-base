@@ -2,6 +2,8 @@
 title: "블록체인 Tx 엣지 케이스 — 패턴을 넘어 실전에서 터지는 것들"
 parent: Blockchain / Web3
 nav_order: 2
+tags: [트랜잭션, Reorg, Nonce, RPC, EIP-1559, Gas, Pending, 엣지케이스]
+description: "Tx 상태 불확실성 복구, Reorg 감지·대응, Nonce Gap 충돌, RPC 장애 폴백, EIP-1559 가스비 급등 등 실전 엣지 케이스를 정리합니다."
 ---
 
 # 블록체인 트랜잭션 엣지 케이스 — 패턴을 넘어 실전에서 터지는 것들

@@ -2,6 +2,8 @@
 title: HTTP/HTTPS와 TCP의 관계
 parent: Network
 nav_order: 1
+tags: [HTTP, HTTPS, TCP, WebSocket, DNS, localhost, hosts, 프로토콜계층]
+description: "TCP 위에서 동작하는 HTTP/HTTPS/WebSocket 관계, 프로토콜 계층 구조, localhost DNS 해석 순서, hosts 파일 활용법을 정리합니다."
 ---
 
 # HTTP/HTTPS와 TCP의 관계

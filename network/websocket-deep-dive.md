@@ -2,6 +2,8 @@
 title: WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지
 parent: Network
 nav_order: 4
+tags: [WebSocket, Sticky Session, Event-Driven, 실시간통신, K8s, Pod, Graceful Shutdown]
+description: "WebSocket 연결/프레임 구조, 스레드 모델 비교, K8s 환경 운영 이슈(Sticky Session, Pod간 브로드캐스트, Graceful Shutdown)를 정리합니다."
 ---
 
 # WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지

@@ -2,6 +2,8 @@
 title: "Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리"
 parent: Infra / 인프라 미들웨어
 nav_order: 1
+tags: [Kafka, Partition, acks, ISR, Consumer, offset, Rebalancing, 메시지큐, 정합성]
+description: "Kafka Partition 기반 순서 보장, acks/ISR, Consumer offset, At Least Once/Exactly Once, Rebalancing 등 핵심 옵션을 총정리합니다."
 ---
 
 # Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리

@@ -2,6 +2,8 @@
 title: "재고 동기화와 Lock 전략 — 이커머스 동시성 문제의 모든 것"
 parent: OS / 운영체제
 nav_order: 8
+tags: [재고, 비관적Lock, 낙관적Lock, Redis DECR, Lost Update, Saga, Lua Script, DLQ]
+description: "Lost Update, 비관적/낙관적 Lock, Redis DECR 재고 차감, Redis-DB 불일치 해결(DLQ/Outbox/Reconciliation) 전략을 정리합니다."
 ---
 
 # 재고 동기화와 Lock 전략 — 이커머스 동시성 문제의 모든 것

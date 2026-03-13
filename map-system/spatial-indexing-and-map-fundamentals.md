@@ -2,6 +2,8 @@
 title: "공간 인덱싱과 지도 시스템 기초 — POI, 타일링, Geocoding"
 parent: Map System / 지도 시스템
 nav_order: 1
+tags: [R-Tree, Geohash, S2, H3, POI, 타일링, Geocoding, PostGIS]
+description: "R-Tree/Geohash/S2/H3 공간 인덱싱, POI 데이터 모델, 지도 타일링, Geocoding, 경로 탐색 알고리즘, PostGIS vs OpenSearch를 정리합니다."
 ---
 
 # 공간 인덱싱과 지도 시스템 기초 — POI, 타일링, Geocoding

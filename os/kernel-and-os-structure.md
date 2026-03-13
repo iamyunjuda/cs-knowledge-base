@@ -2,6 +2,8 @@
 title: "운영체제 구조와 커널(Kernel) 심화"
 parent: OS / 운영체제
 nav_order: 5
+tags: [커널, Kernel, 유저모드, 커널모드, Ring, Monolithic, Microkernel, 컨테이너]
+description: "유저 모드 vs 커널 모드, CPU Ring 구조, 커널 구성 요소, Monolithic vs Microkernel, Linux 커널과 컨테이너 기술의 관계를 정리합니다."
 ---
 
 # 운영체제 구조와 커널(Kernel) 심화

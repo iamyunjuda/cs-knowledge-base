@@ -2,6 +2,8 @@
 title: "커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장"
 parent: OS / 운영체제
 nav_order: 6
+tags: [커널, Kernel, System Call, 유저모드, 커널모드, 프로세스관리, 메모리관리]
+description: "커널의 5가지 역할, 유저 모드 vs 커널 모드, System Call, Java/Spring 개발자가 알아야 하는 커널 이슈를 쉽게 정리합니다."
 ---
 
 # 커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장

@@ -2,6 +2,8 @@
 title: "언어별 비동기 구현 방식 — 내부 동작 원리부터 프레임워크 주의점까지"
 parent: OS / 운영체제
 nav_order: 4
+tags: [async/await, Goroutine, asyncio, tokio, CompletableFuture, Reactive Streams, Backpressure]
+description: "JS/Python/Go/Java/Kotlin/C#/Rust 언어별 비동기 구현 원리, Reactive Streams, Backpressure, 프레임워크별 주의점을 정리합니다."
 ---
 
 # 언어별 비동기 구현 방식 — 내부 동작 원리부터 프레임워크 주의점까지

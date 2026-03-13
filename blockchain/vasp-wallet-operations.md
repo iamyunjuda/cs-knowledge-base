@@ -2,6 +2,8 @@
 title: "VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수"
 parent: Blockchain / Web3
 nav_order: 10
+tags: [VASP, Travel Rule, AML, KYC, Sweep, Omnibus, 거래소, 입출금]
+description: "VASP 거래소 지갑 구조(Sweep/Omnibus), 입출금 처리 플로우, Travel Rule, AML/KYC 연동, 멀티체인 지원을 정리합니다."
 ---
 
 # VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수

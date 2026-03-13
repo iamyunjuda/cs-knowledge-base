@@ -2,6 +2,8 @@
 title: Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서
 parent: Database
 nav_order: 1
+tags: [Cache Stampede, Thundering Herd, TTL, 분산락, 캐시워밍, DB부하]
+description: "Cache Stampede(Thundering Herd) 현상의 원인 분석, TTL 지터, 분산 락, 사전 워밍 등 주기적 DB 부하 급증 해결 전략을 정리합니다."
 ---
 
 # Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서

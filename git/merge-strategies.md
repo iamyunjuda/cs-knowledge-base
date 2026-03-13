@@ -2,6 +2,8 @@
 title: Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준
 parent: Git
 nav_order: 1
+tags: [Rebase, Squash, Merge Commit, 브랜치전략, Git히스토리, 병합]
+description: "Merge Commit, Rebase Merge, Squash Merge 비교, 커밋 보존 여부, 히스토리 형태 차이, 실무 전략 선택 기준을 정리합니다."
 ---
 
 

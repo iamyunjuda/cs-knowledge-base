@@ -2,6 +2,8 @@
 title: "프록시(Proxy)와 리버스 프록시(Reverse Proxy)"
 parent: Network
 nav_order: 5
+tags: [프록시, 리버스프록시, Nginx, SSL Termination, API Gateway, CDN, Ingress]
+description: "Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway, CDN, K8s Ingress Controller, Nginx 설정 예시를 정리합니다."
 ---
 
 # 프록시(Proxy)와 리버스 프록시(Reverse Proxy)

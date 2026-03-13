@@ -2,6 +2,8 @@
 title: "ERC 토큰 표준 심화 — ERC-20, 721, 1155, 4337, 백엔드 구현"
 parent: Blockchain / Web3
 nav_order: 6
+tags: [ERC-20, ERC-721, ERC-1155, ERC-4337, NFT, 토큰표준, approve, Bundler, Paymaster]
+description: "ERC-20 approve/transferFrom, ERC-721 NFT, ERC-1155 멀티 토큰, ERC-4337 계정 추상화 등 토큰 표준과 백엔드 구현을 정리합니다."
 ---
 
 # ERC 토큰 표준 심화 — ERC-20, 721, 1155, 4337, 백엔드 구현

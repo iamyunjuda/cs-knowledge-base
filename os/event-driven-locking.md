@@ -2,6 +2,8 @@
 title: "이벤트 기반 시스템에서의 Lock 처리 — 초고트래픽 환경의 동시성 제어"
 parent: OS / 운영체제
 nav_order: 7
+tags: [분산Lock, Redis, Redisson, Fencing Token, 원자적연산, DECR, 선착순, 동시성]
+description: "분산 Lock(Redis/Redisson), 원자적 연산 DECR, 메시지 큐 직렬화, Fencing Token, 선착순 쿠폰 발급 설계를 정리합니다."
 ---
 
 # 이벤트 기반 시스템에서의 Lock 처리 — 초고트래픽 환경의 동시성 제어

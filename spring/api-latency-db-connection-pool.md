@@ -2,6 +2,8 @@
 title: "판매 통계 API가 느려진 진짜 이유 — DB 커넥션 풀 고갈 추적기"
 parent: Spring
 nav_order: 1
+tags: [HikariCP, 커넥션풀, connection pool, Spring Boot, 슬로우쿼리, Transactional, AOP, 프록시, 500에러, API지연]
+description: "HikariCP 커넥션 풀 고갈 원인 분석, 예외 없는 500 에러의 정체, @Transactional AOP 프록시 단 실패, 커넥션 풀 모니터링과 최적화를 정리합니다."
 ---
 
 # 판매 통계 API가 느려진 진짜 이유 — DB 커넥션 풀 고갈 추적기
