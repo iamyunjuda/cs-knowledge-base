@@ -1,3 +1,9 @@
+---
+title: "epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프"
+parent: OS / 운영체제
+nav_order: 2
+---
+
 # epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프
 
 ## 핵심 정리

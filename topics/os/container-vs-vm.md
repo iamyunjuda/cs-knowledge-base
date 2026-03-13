@@ -1,3 +1,9 @@
+---
+title: "컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가"
+parent: OS / 운영체제
+nav_order: 9
+---
+
 # 컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가
 
 ## 핵심 정리
