@@ -91,6 +91,11 @@
 - [분산 시스템 핵심 패턴 — 동시성, 트랜잭션, 메시징, 데이터 정합성](design-pattern/distributed-system-patterns.md)
   - 비관적/낙관적/분산 락, ACID vs BASE, 2PC/Saga/Outbox 패턴, 전달 보장 모델(At-Least-Once), 멱등성, Block Finality/Nonce/ERC-20/HD Wallet/Gas, Circuit Breaker/CEI/Graceful Degradation, Reconciliation/Source of Truth/Eventual Consistency, CAP 정리, Node.js 이벤트 루프, Reentrancy 공격
 
+### Spring
+
+- [판매 통계 API가 느려진 진짜 이유 — DB 커넥션 풀 고갈 추적기](spring/api-latency-db-connection-pool.md)
+  - HikariCP 커넥션 풀 고갈 원인 분석, 예외 없는 500 에러의 정체, @Transactional AOP 프록시 단 실패, 커넥션 풀 모니터링/사이즈 적정화, 슬로우 쿼리/트랜잭션 최적화
+
 ### Git
 
 - [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준](git/merge-strategies.md)

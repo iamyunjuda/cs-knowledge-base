@@ -12,7 +12,7 @@
 
 현재 카테고리:
 - `java-jvm/` - Java 언어, JVM, 메모리, GC 등
-- `spring/` - Spring Framework, Spring Boot, Bean, AOP 등
+- `spring/` - Spring Framework, Spring Boot, Bean, AOP, 커넥션 풀, 트랜잭션 등
 - `network/` - HTTP, TCP/UDP, DNS, 네트워크 프로토콜 등
 - `os/` - 프로세스, 스레드, 동기/비동기, 운영체제 등
 - `database/` - SQL, 인덱스, 트랜잭션, DB 설계 등
