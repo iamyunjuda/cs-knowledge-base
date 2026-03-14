@@ -486,11 +486,95 @@ suspend fun getOrderDetail(id: Long) = supervisorScope {
 }
 ```
 
+**⚠️ 위 supervisorScope 코드의 문제: 예외가 조용히 삼켜진다!**
+
+```kotlin
+// ❌ 위 코드에서 실제로 일어나는 일:
+val paymentResult = try {
+    payment.await()
+} catch (e: Exception) {
+    null  // 예외를 잡고 null 반환 — 로그 없음, 알림 없음!
+}
+
+// 결과:
+// - 클라이언트는 200 OK + OrderDetail(order=정상, payment=null) 수신
+// - 서버 로그에 아무것도 안 남음
+// - payment 조회가 실패했는지 아무도 모름
+// - 장애가 조용히 묻힘!
+```
+
+**✅ 실무에서는 반드시 로깅 + 의미 있는 폴백을 해야 한다:**
+
+```kotlin
+suspend fun getOrderDetail(id: Long) = supervisorScope {
+    val order = async { getOrder(id) }
+    val payment = async { getPayment(id) }
+    val recommendation = async { getRecommendation(id) }
+
+    val orderResult = order.await()  // 필수 — 실패하면 그대로 예외 전파
+
+    // 선택 데이터 — 실패해도 폴백
+    val paymentResult = try {
+        payment.await()
+    } catch (e: Exception) {
+        log.error("결제 정보 조회 실패 - orderId: {}", id, e)  // ★ 반드시 로깅
+        PaymentInfo.unknown()  // null 대신 의미 있는 기본값
+    }
+
+    val recommendationResult = try {
+        recommendation.await()
+    } catch (e: Exception) {
+        log.warn("추천 조회 실패 - orderId: {}", id, e)
+        emptyList()  // 빈 리스트로 폴백
+    }
+
+    OrderDetail(orderResult, paymentResult, recommendationResult)
+}
+```
+
+```
+실제 응답 비교:
+
+[예외 삼키기 — ❌]
+{
+  "order": { "id": 1, "amount": 50000 },
+  "payment": null,                        ← 왜 null인지 모름
+  "recommendation": null
+}
+
+[로깅 + 의미 있는 폴백 — ✅]
+{
+  "order": { "id": 1, "amount": 50000 },
+  "payment": { "status": "UNKNOWN" },     ← 조회 실패를 명시
+  "recommendation": []                    ← 빈 배열 (정상 구조 유지)
+}
+
++ 서버 로그:
+  ERROR - 결제 정보 조회 실패 - orderId: 1 - ConnectionTimeoutException: ...
+  WARN  - 추천 조회 실패 - orderId: 1 - ServiceUnavailableException: ...
+```
+
+```
+정리: supervisorScope에서 catch 할 때의 3원칙
+
+① 반드시 로깅 (log.error / log.warn)
+   → 예외가 삼켜지면 장애 원인을 찾을 수 없다
+
+② null 대신 의미 있는 기본값 반환
+   → PaymentInfo.unknown(), emptyList(), default 객체
+   → 클라이언트가 null 체크를 안 해도 되게
+
+③ 필수 데이터는 catch하지 말기
+   → order 조회 실패는 전체를 실패시켜야 함
+   → catch 없이 그대로 예외 전파 → @ControllerAdvice에서 처리
+```
+
 ```
 "필수 데이터면 coroutineScope (하나라도 실패하면 전체 실패),
  선택 데이터면 supervisorScope (실패해도 나머지는 성공)을 씁니다.
  예를 들어 결제 정보 조회 실패는 전체 실패시키지만,
- 추천 상품 조회 실패는 빈 리스트로 대체할 수 있습니다."
+ 추천 상품 조회 실패는 빈 리스트로 대체할 수 있습니다.
+ 단, 예외를 잡을 때는 반드시 로깅하고 의미 있는 기본값을 반환해야 합니다."
 ```
 
 #### Q: "코루틴이 실행되는 스레드는 어떤 건가요?"
