@@ -21,6 +21,8 @@
   - JVM의 코드 실행 과정, HotSpot Tiered Compilation, 다른 언어(C/C++, Python, C#, Go, JS)와의 실행 모델 비교, Java 버전별 JVM 주요 변화
 - [JVM 메모리 구조](topics/java-jvm/jvm-memory-structure.md)
   - Heap(세대별 구조, G1GC, ZGC), Method Area(PermGen → Metaspace), JVM Stack, String Pool, Direct Memory, 주요 OOM 에러 정리
+- [Java Thread vs CompletableFuture vs Kotlin Coroutine — 근본적으로 다른 계층의 개념](topics/java-jvm/thread-future-coroutine-comparison.md)
+  - Thread(OS 자원) vs CompletableFuture(결과 컨테이너/API) vs Coroutine(언어 기능), 추상화 레벨 비교, 동일 문제 세 가지 풀이, ForkJoinPool, Virtual Thread 포지션, Structured Concurrency
 
 ### Network
 
