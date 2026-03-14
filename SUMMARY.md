@@ -12,6 +12,8 @@
   - Tomcat 스레드 풀 포화 모니터링(Micrometer/JMX), SimpleAsyncTaskExecutor 예외 삼킴 원인, Filter 단 JWT 검증과 예외 처리, ResponseBody 직렬화 실패(committed 후 문제), Servlet Container vs Spring 관계
 - [SimpleAsyncTaskExecutor vs ThreadPoolTaskExecutor — Spring 비동기 실행기의 차이와 선택 기준](topics/spring/task-executor-comparison.md)
   - SimpleAsyncTaskExecutor(매번 new Thread) vs ThreadPoolTaskExecutor(풀 재사용) 내부 구조, core/max/queue 동작 흐름, RejectedExecutionHandler 정책(CallerRunsPolicy), 용도별 다중 Executor 설정, Virtual Thread 조합, 모니터링
+- [면접 실전 — 서비스 하나가 느릴 때 코루틴/비동기 해결 전략](topics/spring/coroutine-async-interview-deep-dive.md)
+  - 면접 시나리오별 해결책(병렬/비동기분리/캐싱), Coroutine 설정·Dispatcher, Controller vs Service 역할, coroutineScope vs supervisorScope, Spring MVC vs WebFlux 선택, CompletableFuture 대안, 집요한 후속 질문 대비
 - [Tomcat 내부 구조 — Catalina, Coyote, Jasper는 각각 뭔가](topics/spring/tomcat-architecture.md)
   - Coyote(HTTP 엔진) vs Catalina(Servlet 엔진) vs Jasper(JSP 엔진), Server→Service→Engine→Host→Context 계층, Valve Pipeline vs Filter Chain, catalina.out 로그, ErrorReportValve가 HTML을 반환하는 이유, 내장 Tomcat 설정
 - [Tomcat Thread Pool vs DB Connection Pool — 완전히 다른 두 풀의 역할과 관계](topics/spring/tomcat-vs-db-thread-pool.md)
