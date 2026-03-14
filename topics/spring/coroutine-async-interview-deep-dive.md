@@ -324,26 +324,168 @@ class OrderService {
 }
 ```
 
+---
+
+### 2.7단계: Spring MVC + Kotlin에서 병렬 처리 — 현실적인 답
+
 ```
-정리:
+면접관: "WebFlux 얘기 말고, Spring MVC + Kotlin 환경에서
+         어떻게 병렬 처리하시겠어요?"
+```
 
-┌──────────────────────────────────────────────────────────┐
-│              WebFlux                    MVC              │
-│                                                          │
-│  Controller: suspend fun ✅        Controller: fun ✅    │
-│       ↓                                  ↓               │
-│  Service: suspend fun ✅           Service: fun ✅       │
-│  (coroutineScope 사용)              (CompletableFuture    │
-│                                     또는 내부 runBlocking)│
-│                                                          │
-│  ★ suspend 체인이 자연스러움        ★ 코루틴보다          │
-│  ★ 스레드 블로킹 없음               CompletableFuture가  │
-│  ★ 코루틴 100% 활용                 더 자연스러움         │
-└──────────────────────────────────────────────────────────┘
+**솔직한 답: Spring MVC에서 코루틴은 어색하다. 깔끔한 답이 없다.**
 
-결론:
-  WebFlux → Controller도 Service도 suspend → 코루틴 체인
-  MVC → 코루틴 쓰지 말고 CompletableFuture → 더 깔끔
+```
+Spring MVC + 코루틴의 근본적 문제:
+
+MVC의 세계: 모든 것이 동기, 블로킹, 일반 fun
+코루틴의 세계: 모든 것이 suspend, 논블로킹
+
+이 두 세계를 연결하려면 반드시 "다리(bridge)"가 필요한데,
+그 다리가 runBlocking이든 CompletableFuture든 → 결국 어색함
+```
+
+#### 현실적인 선택지 3가지
+
+```kotlin
+// ═══════════════════════════════════════════════════════
+// 선택지 1: 그냥 CompletableFuture 쓰기 (코루틴 안 씀 — 가장 현실적)
+// ═══════════════════════════════════════════════════════
+
+@RestController
+class OrderController(private val orderService: OrderService) {
+
+    @GetMapping("/orders/{id}")
+    fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)  // 일반 fun
+    }
+}
+
+@Service
+class OrderService(
+    @Qualifier("asyncExecutor") private val executor: Executor
+) {
+    fun getOrderDetail(id: Long): OrderDetail {
+        val orderF = CompletableFuture.supplyAsync(
+            { orderRepo.findById(id) }, executor)
+        val paymentF = CompletableFuture.supplyAsync(
+            { paymentClient.getPayment(id) }, executor)
+        val deliveryF = CompletableFuture.supplyAsync(
+            { deliveryService.getStatus(id) }, executor)
+
+        CompletableFuture.allOf(orderF, paymentF, deliveryF).join()
+
+        return OrderDetail(orderF.join(), paymentF.join(), deliveryF.join())
+    }
+}
+
+// ★ 코루틴 없음, suspend 없음, runBlocking 없음
+// ★ MVC 세계에서 가장 자연스러운 병렬 처리
+// ★ Executor(ThreadPoolTaskExecutor)만 Bean으로 등록하면 됨
+```
+
+```kotlin
+// ═══════════════════════════════════════════════════════
+// 선택지 2: 코루틴을 Service 내부에 캡슐화 (코루틴 쓰되 밖에서 안 보이게)
+// ═══════════════════════════════════════════════════════
+
+@Service
+class OrderService {
+    // Service 전용 CoroutineScope
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    // 외부에는 일반 fun으로 노출
+    fun getOrderDetail(id: Long): OrderDetail {
+        // 내부에서만 코루틴 사용, 결과를 블로킹으로 꺼냄
+        return runBlocking(Dispatchers.IO) {
+            val order = async { orderRepo.findById(id) }
+            val payment = async { paymentClient.getPayment(id) }
+            OrderDetail(order.await(), payment.await())
+        }
+    }
+}
+
+// Controller는 아무것도 모름
+@GetMapping("/orders/{id}")
+fun getOrder(@PathVariable id: Long): OrderDetail {
+    return orderService.getOrderDetail(id)  // 그냥 일반 호출
+}
+
+// ⚠️ 결국 runBlocking을 쓰긴 함
+// ⚠️ 하지만 Service 내부에 숨겨서 "다리"를 한 곳으로 제한
+// ⚠️ 이럴 거면 선택지 1이 더 솔직한 코드
+```
+
+```kotlin
+// ═══════════════════════════════════════════════════════
+// 선택지 3: Spring MVC의 비동기 반환 타입 활용
+// ═══════════════════════════════════════════════════════
+
+@RestController
+class OrderController(private val orderService: OrderService) {
+
+    // Callable<T>를 반환하면 Spring MVC가 별도 스레드에서 실행
+    // → Tomcat 스레드를 즉시 반환!
+    @GetMapping("/orders/{id}")
+    fun getOrder(@PathVariable id: Long): Callable<OrderDetail> {
+        return Callable { orderService.getOrderDetail(id) }
+    }
+}
+
+// 또는 DeferredResult 사용
+@GetMapping("/orders/{id}")
+fun getOrder(@PathVariable id: Long): DeferredResult<OrderDetail> {
+    val result = DeferredResult<OrderDetail>(5000L)  // 5초 타임아웃
+
+    CompletableFuture.supplyAsync({ orderService.getOrderDetail(id) })
+        .thenAccept { result.setResult(it) }
+        .exceptionally { ex ->
+            result.setErrorResult(ex)
+            null
+        }
+
+    return result  // Tomcat 스레드 즉시 반환!
+}
+
+// ★ Callable/DeferredResult → MVC에서도 Tomcat 스레드를 빨리 반환 가능
+// ★ 하지만 별도 스레드가 필요한 건 동일 (Thread-per-Request의 한계)
+```
+
+```
+세 선택지 비교:
+
+┌──────────────────┬────────────────┬───────────────┬──────────────┐
+│                  │ CompletableFuture │ 코루틴 캡슐화 │ Callable     │
+│                  │ (선택지 1) ★추천  │ (선택지 2)     │ (선택지 3)    │
+├──────────────────┼────────────────┼───────────────┼──────────────┤
+│ 코루틴 사용       │ ❌ 안 씀       │ ✅ 내부만      │ ❌ 안 씀     │
+│ Controller       │ 일반 fun       │ 일반 fun      │ Callable 반환│
+│ Service          │ 일반 fun       │ 일반 fun      │ 일반 fun     │
+│ 가독성           │ ★★★           │ ★★            │ ★★           │
+│ Tomcat 스레드     │ 블로킹         │ 블로킹        │ 즉시 반환     │
+│ 별도 스레드 필요  │ ✅ Executor    │ ✅ Dispatchers│ ✅ TaskExecutor│
+│ 솔직함           │ ★★★           │ ★★            │ ★★★         │
+└──────────────────┴────────────────┴───────────────┴──────────────┘
+
+★ Spring MVC + Kotlin 환경에서 가장 현실적인 답: CompletableFuture
+```
+
+```
+면접에서 이렇게 답하면 좋다:
+
+"Spring MVC 환경이라면 코루틴보다 CompletableFuture를 선택하겠습니다.
+
+ 이유는 MVC의 Thread-per-Request 모델에서 코루틴을 쓰려면
+ 결국 runBlocking으로 브릿지해야 하는데,
+ 이는 Tomcat 스레드를 블로킹하므로 코루틴의 이점이 사라집니다.
+
+ CompletableFuture.supplyAsync로 여러 서비스를 병렬 호출하고
+ allOf().join()으로 결과를 모으는 것이
+ MVC 환경에서 가장 자연스럽고 솔직한 코드입니다.
+
+ 코루틴의 진짜 이점을 살리려면 WebFlux로의 전환이 필요하지만,
+ 현재 MVC 기반이라면 기술 스택을 바꾸는 것보다
+ CompletableFuture로 해결하는 것이 팀에 부담이 적습니다."
 ```
 
 ---
