@@ -6,7 +6,7 @@
 
 백엔드 개발자로 일하면서 헷갈리거나 깊이 파고들었던 CS 지식들을 기록하고 있습니다.<br/>
 현장에서 부딪히며 배운 내용들이 다른 개발자분들에게도 도움이 되길 바랍니다.<br/>
-도움이 되었다면 star ⭐ 눌러주시면 감사하겠습니다. 🙇🏻‍♂️
+도움이 되었다면 ⭐ 눌러주시면 감사하겠습니다🙇🏻‍♂️
 
 📖 **블로그**: [https://iamyunjuda.github.io/cs-knowledge-base/](https://iamyunjuda.github.io/cs-knowledge-base/)
 
