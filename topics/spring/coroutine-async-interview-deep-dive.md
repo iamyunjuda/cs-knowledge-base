@@ -138,6 +138,216 @@ class CoroutineConfig {
 
 ---
 
+### 2.5단계: "코루틴 스코프를 어떻게 여세요?" — runBlocking을 말하면 안 되는 이유
+
+```
+면접관: "코루틴 스코프를 어떻게 여시죠?"
+응시자: "runBlocking으로 엽니다"
+면접관: (놀란 표정)
+```
+
+**왜 면접관이 놀랐는가:**
+
+```
+runBlocking은 "현재 스레드를 블로킹하면서 코루틴을 실행"하는 것.
+이건 코루틴의 존재 이유를 정면으로 부정하는 사용법이다.
+
+코루틴의 핵심: "스레드를 블로킹하지 않고 비동기 작업을 하는 것"
+runBlocking: "스레드를 블로킹하면서 코루틴을 실행하는 것"
+→ 모순!
+```
+
+```kotlin
+// runBlocking의 실제 동작
+fun main() {
+    println("시작")
+
+    runBlocking {          // ← 현재 스레드(main)가 여기서 멈춤
+        delay(1000)        //    코루틴 내부에서 1초 대기
+        println("코루틴")
+    }                      // ← 코루틴 끝날 때까지 main 스레드 블로킹
+
+    println("끝")          // 1초 후에야 실행됨
+}
+```
+
+**runBlocking은 언제 쓰는 건가?**
+
+```
+✅ 올바른 사용처 (딱 2곳):
+  ① main() 함수 — 프로그램 진입점에서 코루틴 세계로 들어갈 때
+  ② 테스트 코드 — JUnit에서 suspend 함수를 호출할 때
+
+  fun main() = runBlocking {  // 여기서만 OK
+      launch { doWork() }
+  }
+
+  @Test
+  fun testSomething() = runBlocking {  // 테스트에서 OK
+      val result = myService.getData()
+      assertEquals("expected", result)
+  }
+
+❌ 절대 쓰면 안 되는 곳:
+  - Spring Controller
+  - Spring Service
+  - 이미 코루틴 안에 있는 곳
+  → 스레드를 블로킹해서 코루틴의 의미가 없어짐
+```
+
+**그러면 Spring에서 코루틴 스코프를 어떻게 열어야 하나?**
+
+```kotlin
+// ★ 핵심: Spring WebFlux에서는 "스코프를 직접 열 필요가 없다"
+
+// ✅ Controller를 suspend로 선언 → Spring이 알아서 코루틴 컨텍스트 생성
+@GetMapping("/orders/{id}")
+suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+    return orderService.getOrderDetail(id)
+    // Spring WebFlux가 내부적으로 Mono.asCoroutine()으로 변환
+    // 개발자가 runBlocking이나 CoroutineScope을 직접 만들 필요 없음
+}
+
+// ✅ Service에서 coroutineScope 사용 — 이건 "스코프를 여는" 게 아니라
+//    "자식 코루틴의 범위를 정하는" 것
+suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+    val order = async { getOrder(id) }
+    val payment = async { getPayment(id) }
+    OrderDetail(order.await(), payment.await())
+}
+```
+
+```
+면접에서 이렇게 답했어야 한다:
+
+"코루틴 스코프는 직접 열지 않습니다.
+ Spring WebFlux에서는 Controller의 suspend 함수를 선언하면
+ Spring이 자동으로 코루틴 컨텍스트를 생성합니다.
+
+ Service에서 병렬 실행이 필요할 때는 coroutineScope을 사용하는데,
+ 이건 '스코프를 새로 여는 것'이 아니라
+ '자식 코루틴의 생명주기 범위를 정하는 것'입니다.
+
+ runBlocking은 스레드를 블로킹하므로
+ main() 함수나 테스트 코드에서만 사용해야 합니다."
+```
+
+---
+
+### 2.6단계: "Controller는 일반 fun이고 Service만 suspend이면 되나요?"
+
+```
+면접관: "Controller는 그냥 fun으로 정의하고
+         Service만 suspend 함수이면 되는 건가요?"
+```
+
+**안 된다.** suspend 함수는 suspend 함수 안에서만 호출할 수 있다.
+
+```kotlin
+// ❌ 컴파일 에러!
+@RestController
+class OrderController(private val orderService: OrderService) {
+
+    @GetMapping("/orders/{id}")
+    fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)
+        //     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        //     컴파일 에러: Suspend function 'getOrderDetail'
+        //     should be called only from a coroutine or
+        //     another suspend function
+    }
+}
+
+class OrderService {
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        // ...
+    }
+}
+```
+
+```
+suspend 함수의 규칙:
+  suspend 함수는 반드시 아래 중 하나에서만 호출 가능:
+  ① 다른 suspend 함수 안
+  ② 코루틴 빌더 안 (launch, async, runBlocking 등)
+
+  일반 fun에서 suspend를 호출하면 → 컴파일 에러
+```
+
+**그러면 어떻게 해야 하나? 3가지 방법:**
+
+```kotlin
+// 방법 1: Controller도 suspend로 만든다 (WebFlux — 가장 깔끔)
+@GetMapping("/orders/{id}")
+suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+    return orderService.getOrderDetail(id)
+    // suspend → suspend 호출이므로 OK
+    // Spring WebFlux가 자동으로 코루틴 실행 환경을 만들어줌
+}
+
+// 방법 2: Service를 suspend가 아닌 일반 함수로 만든다 (MVC — 권장)
+// Service 내부에서 코루틴을 캡슐화
+@Service
+class OrderService(private val customDispatcher: CoroutineDispatcher) {
+
+    // ✅ 일반 fun — Controller가 suspend일 필요 없음
+    fun getOrderDetail(id: Long): OrderDetail {
+        return runBlocking(customDispatcher) {  // 여기서만 bridge
+            val order = async { getOrder(id) }
+            val payment = async { getPayment(id) }
+            OrderDetail(order.await(), payment.await())
+        }
+    }
+}
+
+// Controller는 일반 fun
+@GetMapping("/orders/{id}")
+fun getOrder(@PathVariable id: Long): OrderDetail {
+    return orderService.getOrderDetail(id)  // OK — 일반 fun
+}
+// ⚠️ 하지만 이러면 결국 runBlocking... → 차라리 CompletableFuture
+
+// 방법 3: CompletableFuture로 변환 (MVC — 가장 실용적)
+@Service
+class OrderService {
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    fun getOrderDetailAsync(id: Long): CompletableFuture<OrderDetail> {
+        return scope.async {
+            coroutineScope {
+                val order = async { getOrder(id) }
+                val payment = async { getPayment(id) }
+                OrderDetail(order.await(), payment.await())
+            }
+        }.asCompletableFuture()
+    }
+}
+```
+
+```
+정리:
+
+┌──────────────────────────────────────────────────────────┐
+│              WebFlux                    MVC              │
+│                                                          │
+│  Controller: suspend fun ✅        Controller: fun ✅    │
+│       ↓                                  ↓               │
+│  Service: suspend fun ✅           Service: fun ✅       │
+│  (coroutineScope 사용)              (CompletableFuture    │
+│                                     또는 내부 runBlocking)│
+│                                                          │
+│  ★ suspend 체인이 자연스러움        ★ 코루틴보다          │
+│  ★ 스레드 블로킹 없음               CompletableFuture가  │
+│  ★ 코루틴 100% 활용                 더 자연스러움         │
+└──────────────────────────────────────────────────────────┘
+
+결론:
+  WebFlux → Controller도 Service도 suspend → 코루틴 체인
+  MVC → 코루틴 쓰지 말고 CompletableFuture → 더 깔끔
+```
+
+---
+
 ### 3단계: "Controller에서 코루틴을 쓰면 안 되나요?"
 
 ```
