@@ -6,6 +6,8 @@
   - HikariCP 커넥션 풀 고갈 원인 분석, 예외 없는 500 에러의 정체, @Transactional AOP 프록시 단 실패, 커넥션 풀 모니터링/사이즈 적정화, 슬로우 쿼리/트랜잭션 최적화
 - [@Transactional과 예외 처리 — 커넥션 풀 타임아웃이 500인데 로그가 안 남는 이유](topics/spring/transactional-exception-flow.md)
   - Spring 요청 처리 파이프라인, AOP 프록시 커넥션 획득 시점, CannotCreateTransactionException, 예외가 삼켜지는 4가지 시나리오, 500 vs 503 선택, 로그 없는 500 방지 체크리스트
+- [DB 커넥션 풀 동작 원리 — HikariCP 내부 구조부터 DB별 스레드 모델까지](topics/spring/connection-pool-internals.md)
+  - HikariCP ConcurrentBag/ThreadLocal 최적화, 커넥션 획득·반납 흐름, @Transactional 유무에 따른 커넥션 생명주기, MySQL(멀티스레드) vs PostgreSQL(멀티프로세스) vs Oracle 비교, 커넥션 풀 사이즈 공식, R2DBC
 
 ### Java / JVM
 
