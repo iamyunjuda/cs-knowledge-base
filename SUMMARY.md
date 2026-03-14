@@ -8,6 +8,8 @@
   - Spring 요청 처리 파이프라인, AOP 프록시 커넥션 획득 시점, CannotCreateTransactionException, 예외가 삼켜지는 4가지 시나리오, 500 vs 503 선택, 로그 없는 500 방지 체크리스트
 - [DB 커넥션 풀 동작 원리 — HikariCP 내부 구조부터 DB별 스레드 모델까지](topics/spring/connection-pool-internals.md)
   - HikariCP ConcurrentBag/ThreadLocal 최적화, 커넥션 획득·반납 흐름, @Transactional 유무에 따른 커넥션 생명주기, MySQL(멀티스레드) vs PostgreSQL(멀티프로세스) vs Oracle 비교, 커넥션 풀 사이즈 공식, R2DBC
+- [Spring 요청 처리 사각지대 — 로그가 안 남는 에러들의 정체](topics/spring/request-processing-blind-spots.md)
+  - Tomcat 스레드 풀 포화 모니터링(Micrometer/JMX), SimpleAsyncTaskExecutor 예외 삼킴 원인, Filter 단 JWT 검증과 예외 처리, ResponseBody 직렬화 실패(committed 후 문제), Servlet Container vs Spring 관계
 
 ### Java / JVM
 
