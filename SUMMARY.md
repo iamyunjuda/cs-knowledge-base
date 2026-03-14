@@ -70,7 +70,7 @@
 - [블록체인 모니터링 시스템 — 설계, 지표, 알림, 운영](topics/blockchain/blockchain-monitoring-system.md)
   - Tx 상태/Nonce/가스비/지갑 잔액/RPC/이벤트 리스너 모니터링 지표, Prometheus+Grafana 아키텍처, 알림 등급(P1~P3) 설계, 대시보드 레이아웃, 온체인 감시(Defender/Forta), 백오피스 연동, 인시던트 대응 플레이북
 - [블록체인 분산 네트워크 — 중앙 서버 없이 20만 노드가 연결되는 원리](topics/blockchain/distributed-network-p2p.md)
-  - 부트스트랩 노드(Seed Node), Kademlia DHT 노드 탐색, devp2p/RLPx 프로토콜 스택, 가십 프로토콜(Gossip) 블록/Tx 전파, 비트코인 DNS Seed, P2P 네트워크 토폴로지, NAT 통과, 악의적 노드 방어
+  - 부트스트랩 노드(Seed Node), Kademlia DHT 노드 탐색, devp2p/RLPx 프로토콜 스택, 가십 프로토콜(Gossip) 블록/Tx 전파, 비트코인 DNS Seed/addr 메시지/Compact Block Relay(BIP 152)/Headers-First Sync/Eviction 정책/BIP 324 암호화, 이더리움 vs 비트코인 설계 철학 비교
 - [합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality](topics/blockchain/consensus-mechanisms.md)
   - PoW 채굴/난이도 조정/51% 공격, PoS Validator/Slashing/Epoch, PoW vs PoS 비교, Block Finality(확률적 vs 결정적), Reorg 심화(PoS Reorg, 감지 시스템), DPoS/PBFT/PoA/PoH, The Merge 전후 변화
 - [ERC 토큰 표준 심화 — ERC-20, 721, 1155, 4337, 백엔드 구현](topics/blockchain/erc-token-standards.md)

@@ -231,21 +231,380 @@
 | 노드 수 (2024) | ~15,000~20,000 | ~6,000~10,000 (실행 노드) |
 | 체인 크기 | ~600GB | ~1TB+ (pruned ~500GB) |
 
-### 비트코인의 DNS Seed 방식
+### 비트코인 네트워크 심화 — 이더리움과 근본적으로 다른 설계 철학
 
-비트코인은 부트스트랩 노드 대신 **DNS Seed** 방식을 주로 사용한다:
+비트코인과 이더리움은 둘 다 P2P지만, **노드 탐색 방식, 메시지 구조, 블록 전파 최적화** 등에서 상당히 다르다. 비트코인은 2009년에 설계된 만큼 더 단순하고 보수적이며, 이더리움은 이를 개선한 구조다.
+
+#### 1. 초기 연결: DNS Seed — 기존 인프라를 영리하게 활용
+
+비트코인은 이더리움처럼 별도 프로토콜(Kademlia)을 쓰지 않고, **이미 전 세계에 깔려있는 DNS 인프라**를 활용한다.
 
 ```
-1. 비트코인 클라이언트가 DNS 쿼리 전송
-   dig seed.bitcoin.sipa.be    → 여러 노드의 IP 주소 반환
-   dig dnsseed.bluematt.me     → 여러 노드의 IP 주소 반환
+[ 비트코인의 3단계 폴백 초기 연결 ]
 
-2. DNS 서버가 현재 활성 노드들의 IP를 반환
-   (DNS Seed 운영자가 주기적으로 크롤링하여 목록 갱신)
+우선순위 1: DNS Seed
+──────────────────────────────────────────────────
+Bitcoin Core에 하드코딩된 DNS Seed 목록:
+  - seed.bitcoin.sipa.be          (Pieter Wuille)
+  - dnsseed.bluematt.me           (Matt Corallo)
+  - dnsseed.bitcoin.dashjr-list-of-p2p-nodes.us  (Luke Dashjr)
+  - seed.bitcoinstats.com         (Christian Decker)
+  - seed.bitcoin.jonasschnelli.ch (Jonas Schnelli)
+  - seed.btc.petertodd.net        (Peter Todd)
 
-3. 반환된 IP로 직접 TCP 연결
+동작 방식:
+  $ dig seed.bitcoin.sipa.be
+  → 82.196.7.109
+  → 23.92.68.48
+  → 185.148.3.14
+  → ... (현재 활성 노드 IP 25개 정도 반환)
 
-→ DNS 인프라를 활용하므로 NAT/방화벽 뒤에서도 초기 연결이 쉬움
+DNS Seed 운영자가 "크롤러 봇"을 돌려서
+전체 네트워크를 주기적으로 스캔하고,
+현재 살아있는 노드 IP를 DNS 레코드에 갱신함
+
+우선순위 2: 캐싱된 피어 목록 (peers.dat)
+──────────────────────────────────────────────────
+이전에 연결 성공한 노드 IP를 로컬 파일에 저장
+→ DNS가 안 되어도 이전 기록으로 연결 시도
+
+우선순위 3: 하드코딩된 시드 노드
+──────────────────────────────────────────────────
+최후의 수단. Bitcoin Core 소스코드에 IP가 직접 박혀있음
+→ DNS도 안 되고, 캐시도 없을 때 사용
+→ chainparams.cpp의 pnSeed6_main[] 배열
+```
+
+**왜 비트코인은 DNS를 선택했나?**
+```
+이더리움 (Kademlia DHT)           비트코인 (DNS Seed)
+──────────────────────           ─────────────────
+✅ 완전 탈중앙화                  ⚠️ DNS 운영자 의존
+✅ 별도 인프라 불필요              ✅ 기존 DNS 인프라 활용
+❌ 구현 복잡도 높음               ✅ 구현이 매우 단순
+❌ 초기 탐색 시간 김               ✅ DNS 응답 = 즉시 연결 가능
+                                 ✅ NAT/방화벽에 강함 (UDP 53)
+```
+비트코인은 2009년 설계 → "심플하게, 잘 동작하는 기존 인프라 활용"이 철학
+
+#### 2. 피어 관리: addr 메시지 — 구전으로 주소 퍼뜨리기
+
+비트코인은 이더리움의 Kademlia DHT 대신, **addr 메시지**로 피어 주소를 교환한다. 훨씬 단순한 방식이다.
+
+```
+[ 비트코인 피어 발견 흐름 ]
+
+1. 연결 수립 직후: version 핸드셰이크
+   A → B: version (내 프로토콜 버전, 블록 높이, 내 IP)
+   B → A: version
+   A → B: verack  (핸드셰이크 완료)
+   B → A: verack
+
+2. 피어 주소 요청
+   A → B: getaddr ("너 아는 노드 목록 줘")
+   B → A: addr    (최대 1,000개의 {IP, port, timestamp} 반환)
+
+3. 주기적 주소 브로드캐스트 (능동적 공유)
+   노드가 새 피어를 발견하면 → 연결된 피어 중 2개를 랜덤으로 골라서 addr 전송
+   → "야, 이런 노드가 있더라" (가십처럼 퍼짐)
+
+4. peers.dat에 누적 저장
+   ┌──────────────────────────────────────┐
+   │ peers.dat (로컬 캐시)                 │
+   │                                      │
+   │ IP: 82.196.7.109  Port: 8333         │
+   │ Last Seen: 2024-01-15 14:23:00       │
+   │ Source: DNS Seed                      │
+   │                                      │
+   │ IP: 23.92.68.48   Port: 8333         │
+   │ Last Seen: 2024-01-15 14:25:30       │
+   │ Source: addr message from peer #3    │
+   │ ...                                  │
+   │ (수천~수만 개의 주소 누적)              │
+   └──────────────────────────────────────┘
+```
+
+**addrv2 메시지 (BIP 155) — 2021년 업그레이드**:
+```
+기존 addr: IPv4/IPv6만 지원
+
+addrv2: Tor (.onion), I2P, CJDNS 주소도 지원
+  → 비트코인 노드의 ~10%가 Tor로 운영
+  → 프라이버시와 검열 저항성 강화
+
+[ addrv2 메시지 구조 ]
+{
+  network_id: 0x04,           // Tor v3
+  addr: "abc...xyz.onion",    // 32바이트 Tor 주소
+  port: 8333,
+  services: NODE_NETWORK,
+  time: 1705312800
+}
+```
+
+#### 3. 비트코인 메시지 프로토콜 — 단순하지만 완전한 설계
+
+비트코인의 모든 P2P 통신은 **하나의 TCP 연결(포트 8333)** 위에서 동작한다. 이더리움처럼 탐색(UDP)과 데이터(TCP)를 분리하지 않는다.
+
+```
+[ 비트코인 메시지 구조 ]
+
+┌─────────────────────────────────────────────────┐
+│ 모든 메시지의 공통 헤더 (24바이트)                  │
+├──────────┬─────────┬──────────┬─────────────────┤
+│ Magic    │ Command │ Payload  │ Checksum        │
+│ (4byte)  │ (12byte)│ Size     │ (4byte)         │
+│ 0xF9BEB4D9│ "tx\0..." │ (4byte)  │ SHA256 앞4바이트 │
+└──────────┴─────────┴──────────┴─────────────────┘
+
+Magic Number:
+  Mainnet:  0xF9BEB4D9  ← 이걸로 메인넷/테스트넷 구분
+  Testnet3: 0x0B110907
+  Signet:   0x0A03CF40
+
+주요 메시지 유형:
+┌──────────────┬────────────────────────────────────┐
+│ 메시지         │ 설명                                │
+├──────────────┼────────────────────────────────────┤
+│ version/verack│ 핸드셰이크 (연결 시작)                │
+│ ping/pong     │ 연결 유지 확인 (2분마다)              │
+│ addr/addrv2   │ 피어 주소 공유                       │
+│ getaddr       │ 피어 주소 요청                       │
+│ inv           │ "이런 데이터 있어" (해시 목록)          │
+│ getdata       │ "그 데이터 줘" (해시로 요청)           │
+│ tx            │ 트랜잭션 전송                        │
+│ block         │ 블록 전체 전송                       │
+│ headers       │ 블록 헤더만 전송                     │
+│ getheaders    │ 블록 헤더 요청                       │
+│ cmpctblock    │ Compact Block (압축 블록)            │
+│ getblocktxn   │ 누락된 Tx 요청 (Compact Block용)     │
+│ blocktxn      │ 누락된 Tx 응답                      │
+│ feefilter     │ "이 수수료 이하 Tx는 보내지 마"       │
+│ sendcmpct     │ "Compact Block 지원해" 선언          │
+└──────────────┴────────────────────────────────────┘
+```
+
+#### 4. 블록 전파: Compact Block Relay (BIP 152) — 대역폭 최적화의 핵심
+
+블록 하나가 1~2MB인데, 이걸 만 개 넘는 노드에 그대로 보내면 대역폭 낭비가 심하다. **핵심 아이디어**: 어차피 블록 안의 트랜잭션 대부분은 수신 노드의 mempool에 이미 있다!
+
+```
+[ Compact Block Relay 동작 원리 ]
+
+기존 방식 (Legacy Relay):
+  A → B: inv ("블록 해시 0xABC... 있어")
+  B → A: getdata ("그 블록 줘")
+  A → B: block (1.5MB 전체 블록 전송)
+  → 왕복 2번 + 대용량 전송 = 느림
+
+Compact Block 방식:
+  A → B: cmpctblock {
+           header: 블록 헤더 (80바이트),
+           short_ids: [0x1a2b, 0x3c4d, ...],  ← Tx 해시 6바이트로 축약
+           prefilled_txn: [coinbase_tx]        ← 코인베이스만 포함
+         }
+         → 전체 크기: ~20KB (1.5MB 대비 98% 절약!)
+
+  B: short_ids로 내 mempool에서 트랜잭션 매칭
+     → 대부분 이미 가지고 있음!
+     → 1~2개 못 찾으면:
+
+  B → A: getblocktxn (못 찾은 Tx 인덱스)
+  A → B: blocktxn (해당 Tx만 전송)
+
+  B: 블록 재조립 완료 → 검증
+
+[ 대역폭 비교 ]
+  기존: 1.5MB per block per peer
+  Compact Block: ~20KB + α (누락분)
+  → 약 99% 대역폭 절약
+```
+
+**High-Bandwidth vs Low-Bandwidth 모드**:
+```
+High-Bandwidth Mode (HB):
+  - 피어 3개를 HB 모드로 지정
+  - inv 없이 바로 cmpctblock 전송 (왕복 0번)
+  - 블록을 가장 먼저 받을 수 있음
+  - 중복 수신 가능 → 대역폭 약간 낭비
+
+Low-Bandwidth Mode (LB):
+  - 나머지 피어들은 LB 모드
+  - 먼저 inv → 관심 있으면 → getdata로 cmpctblock 요청
+  - 왕복 1번 추가되지만 중복 수신 방지
+
+A ─── HB ─── B   (블록 나오면 바로 cmpctblock 전송)
+A ─── LB ─── C   (inv 먼저, 요청하면 전송)
+A ─── LB ─── D
+```
+
+#### 5. 트랜잭션 전파: inv → getdata → tx 3단계
+
+```
+[ 비트코인 트랜잭션 전파 과정 ]
+
+유저가 트랜잭션 생성 → 연결된 노드 A에 전송
+
+A: 트랜잭션 검증 (서명, 잔액, 수수료 등)
+   └→ 유효하면 mempool에 저장
+
+A → 모든 피어에게: inv (MSG_TX, txid_hash)
+   "이 txid 트랜잭션 있는데 알아?"
+
+피어 B: "모르는 txid네"
+B → A: getdata (MSG_TX, txid_hash)
+   "그 트랜잭션 줘"
+
+A → B: tx (트랜잭션 전체 데이터)
+
+B: 검증 후 mempool에 저장
+B → 자기 피어들에게: inv (같은 txid)
+   → 반복하여 전체 네트워크에 전파
+
+[ 왜 3단계? 바로 보내면 안 되나? ]
+  → 이미 가지고 있는 Tx를 중복 전송하면 대역폭 낭비
+  → inv (32바이트)로 먼저 "있어?"만 물어보고
+  → 모르는 경우에만 전체 데이터 전송
+```
+
+**Erlay (BIP 330) — 차세대 트랜잭션 릴레이 (개발 중)**:
+```
+현재: 모든 피어에게 inv 전송
+  → 피어 8개면 inv 8번 전송 → 대부분 중복
+
+Erlay: 일부 피어에게만 inv 직접 전송
+  + 나머지는 "set reconciliation"으로 효율적 동기화
+  → minisketch 라이브러리 사용
+  → 대역폭 ~40% 추가 절약 예상
+
+현재                          Erlay
+A → B: inv                   A → B: inv (직접 전파)
+A → C: inv                   A → C: reconciliation
+A → D: inv                   A → D: reconciliation
+A → E: inv                   (C, D는 차이만 교환)
+(모두 중복 가능)              → 대역폭 대폭 절감
+```
+
+#### 6. 블록체인 동기화: Headers-First 방식
+
+```
+[ 비트코인 Initial Block Download (IBD) ]
+
+옛날 방식: getblocks → 블록 하나씩 순서대로 다운로드
+  → 느림, 한 피어에 의존
+
+현재 방식: Headers-First Sync
+────────────────────────────────────────
+
+1단계: 헤더만 먼저 전부 받기 (매우 빠름)
+  A → B: getheaders (내가 아는 마지막 블록 해시)
+  B → A: headers (최대 2,000개 헤더, 각 80바이트)
+  A → B: getheaders (이어서)
+  B → A: headers
+  ...반복...
+
+  블록 헤더 80바이트 × 85만개 ≈ 68MB
+  → 몇 분이면 전체 헤더 체인 확보
+
+2단계: 헤더 체인 검증
+  - 해시 연결이 올바른가?
+  - PoW 난이도가 맞는가?
+  - 가장 많은 작업량(누적 난이도)을 가진 체인 선택
+
+3단계: 블록 바디 병렬 다운로드
+  헤더로 검증된 블록 해시를 알고 있으므로,
+  여러 피어에게 동시에 다른 블록을 요청 가능!
+
+  피어 A: 블록 1~1000 요청
+  피어 B: 블록 1001~2000 요청
+  피어 C: 블록 2001~3000 요청
+  → 병렬 다운로드로 속도 대폭 향상
+
+  각 블록을 받으면 즉시 검증:
+  - 트랜잭션 서명 검증
+  - UTXO 모델 확인 (이중 지출 방지)
+  - 블록 해시가 헤더와 일치하는지
+
+전체 IBD 소요 시간: 보통 몇 시간 ~ 하루
+(인터넷 속도, SSD 성능에 따라 다름)
+```
+
+#### 7. 비트코인의 피어 관리 정책
+
+```
+[ 연결 슬롯 관리 ]
+
+Outbound 연결 (내가 먼저 연결): 최대 8개 (기본값)
+  ├─ Full-Relay: 8개 (블록 + 트랜잭션 모두 릴레이)
+  ├─ Block-Only: 2개 (블록만 릴레이, Tx 안 받음)
+  │   → 네트워크 토폴로지 노출 방지 (프라이버시)
+  └─ Feeler: 1~2개 (짧게 연결 후 끊음, 피어 테스트용)
+
+Inbound 연결 (상대가 나에게 연결): 최대 117개 (기본값)
+  → 포트 8333이 열려있어야 받을 수 있음
+
+총 최대 연결: 125개
+
+[ Eviction (연결 해제) 정책 — 누구를 끊을까? ]
+Inbound 슬롯이 꽉 찼을 때 새 연결 요청이 오면:
+
+보호 대상 (끊기지 않는 노드):
+  1. 네트워크 그룹 다양성이 높은 노드   ← /16 서브넷 기준
+  2. 가장 낮은 ping 응답 시간
+  3. 가장 최근에 트랜잭션을 보낸 노드
+  4. 가장 최근에 블록을 보낸 노드
+  5. 가장 오래 연결을 유지한 노드
+
+→ 이런 노드들을 보호한 후, 나머지 중에서 가장 최근에 메시지를 보내지 않은 노드를 끊음
+→ Eclipse Attack 방어 (공격자가 모든 연결을 장악하는 것 방지)
+```
+
+#### 8. 이더리움 vs 비트코인 네트워크 설계 철학 비교
+
+```
+[ 근본적 차이: "왜 다르게 설계했나?" ]
+
+비트코인 (2009년 설계)
+  목표: "단순하고 견고하게, 깨지지 않게"
+  └→ DNS Seed: 이미 검증된 인프라 재활용
+  └→ addr 메시지: 단순한 주소 교환
+  └→ 모든 통신이 TCP 하나로 통일
+  └→ 보수적 업그레이드 (BIP 프로세스, 수년 소요)
+
+이더리움 (2015년 설계)
+  목표: "확장 가능하고 모듈화된 네트워크"
+  └→ Kademlia DHT: 완전 탈중앙화된 노드 탐색
+  └→ 탐색(UDP) / 통신(TCP) 분리
+  └→ 서브 프로토콜 구조 (eth, snap, les)
+  └→ 적극적 업그레이드 (EIP, 하드포크)
+
+비유:
+  비트코인 = 30년 된 Toyota 엔진 — 심플하고 절대 안 고장남
+  이더리움 = Tesla 전기차 — 최신 기술, OTA 업데이트
+```
+
+| 구분 | 비트코인 | 이더리움 |
+|------|----------|----------|
+| 설계 철학 | 단순·견고 | 확장·모듈화 |
+| 노드 탐색 | DNS Seed → addr 메시지 | Kademlia DHT (discv4/v5) |
+| 전송 채널 | TCP 8333 하나 | 탐색 UDP 30303 + 데이터 TCP 30303 |
+| 암호화 | 없음 (평문 전송) | ECIES + RLPx (전구간 암호화) |
+| 블록 전파 최적화 | Compact Block (BIP 152) | eth/68 해시 announcement |
+| Tx 릴레이 | inv → getdata → tx | NewPooledTransactionHashes |
+| 피어 프라이버시 | Block-Only 연결, Tor 지원 | 제한적 |
+| 메시지 포맷 | 바이너리 (자체 직렬화) | RLP 인코딩 |
+| 동기화 | Headers-First + 병렬 블록 | Snap Sync + State Healing |
+| 피어 평판 | Eviction 정책 + Banning | 점수 기반 평판 시스템 |
+
+**비트코인이 암호화 안 하는 이유?**
+```
+"어차피 모든 데이터가 공개 정보(블록, 트랜잭션)인데
+암호화할 이유가 있나?"
+→ 사토시의 설계 철학: 불필요한 복잡성 배제
+
+단점: ISP가 비트코인 트래픽을 식별하고 차단 가능
+  → BIP 324 (v2 Transport Protocol)로 암호화 추가 중
+  → Bitcoin Core 26.0부터 옵트인 지원
 ```
 
 ## 헷갈렸던 포인트
@@ -291,9 +650,73 @@
 - UPnP 자동 포트포워딩을 지원하는 라우터에서는 자동으로 열림
 - inbound가 안 되어도 네트워크 참여 자체는 가능 (outbound만으로 충분)
 
-### Q5: 악의적 노드가 가짜 블록을 전파하면?
+### Q5: 비트코인은 DNS Seed 운영자를 신뢰해야 하는 거 아닌가? 중앙화 아닌가?
 
-**A**: 각 노드가 **독립적으로 모든 블록을 검증**하기 때문에 무시된다.
+**A**: 좋은 지적이지만, 실제로는 여러 겹의 안전장치가 있다.
+```
+1. DNS Seed는 "주소만 알려줌" — 데이터 검증은 각 노드가 독립적으로 함
+   → 악의적 DNS Seed가 가짜 노드 IP를 줘도
+   → 연결 후 블록 검증에서 걸림
+
+2. DNS Seed 운영자가 6~8명으로 분산
+   → 전부 매수해야 공격 가능
+
+3. DNS가 아예 안 되어도 3가지 폴백 존재
+   - peers.dat 캐시
+   - 하드코딩된 시드 노드
+   - -connect 옵션으로 수동 연결
+
+4. 이미 한번 연결된 노드는 DNS Seed를 다시 쓰지 않음
+   → 최초 1회만 필요
+
+결론: DNS Seed가 중앙화 포인트이긴 하지만,
+      "처음 소개만 해주는 역할"이라 실질적 위협은 낮음
+```
+
+### Q6: 비트코인은 통신 암호화를 안 한다고? 그러면 도청당하는 거 아닌가?
+
+**A**: 맞다. 비트코인 P2P 통신은 원래 **평문(plaintext)**이다.
+```
+문제점:
+  - ISP가 비트코인 트래픽 식별 가능 → 차단/검열 가능
+  - 중간자가 어떤 노드가 어떤 트랜잭션을 먼저 전파했는지 관찰 가능
+  - 국가 수준 검열에 취약
+
+하지만 보안 위험은 제한적:
+  - 블록/트랜잭션 데이터 자체는 공개 정보
+  - 위변조는 디지털 서명 + 해시로 검증 → 불가능
+  - 프라이버시가 주된 우려
+
+대응:
+  - BIP 324 (v2 Transport): 전구간 암호화 추가
+    → Bitcoin Core 26.0+에서 지원
+    → 트래픽이 랜덤 바이트처럼 보임 → ISP 식별 불가
+  - Tor/I2P 위에서 노드 운영: 네트워크 수준 익명성
+```
+
+### Q7: Compact Block이랑 이더리움의 블록 전파 방식은 뭐가 다른 건가?
+
+**A**: 핵심 아이디어는 비슷하지만 접근 방식이 다르다.
+```
+비트코인 Compact Block (BIP 152):
+  1. 블록 헤더 + Tx의 짧은 ID(6바이트)를 먼저 보냄
+  2. 수신자가 mempool에서 매칭
+  3. 못 찾은 Tx만 추가 요청
+  → "대부분의 Tx를 이미 알고 있다"는 가정 활용
+
+이더리움 eth/68 방식:
+  1. 새 블록 해시를 피어 일부(√N)에게 전체 블록으로 전송
+  2. 나머지 피어에게는 해시만 announcement
+  3. 해시만 받은 노드가 필요하면 전체 블록 요청
+  → "누구에게 전체를 보내고 누구에게 해시만 보내느냐"의 최적화
+
+비트코인: "블록 안의 Tx를 압축" (내용 최적화)
+이더리움: "누구에게 보낼지를 최적화" (라우팅 최적화)
+```
+
+### Q8: 악의적 노드가 가짜 블록을 전파하면?
+
+**A**: 비트코인이든 이더리움이든, 각 노드가 **독립적으로 모든 블록을 검증**하기 때문에 무시된다.
 ```
 악의적 노드 → 가짜 블록 전파
           ↓
@@ -309,8 +732,17 @@
 
 ## 참고 자료
 
+### 이더리움
 - [Ethereum Devp2p Specifications](https://github.com/ethereum/devp2p)
 - [Ethereum Node Discovery Protocol v4](https://github.com/ethereum/devp2p/blob/master/discv4.md)
 - [Kademlia: A Peer-to-peer Information System](https://pdos.csail.mit.edu/~petar/papers/maymounkov-kademlia-lncs.pdf)
-- [Bitcoin P2P Network - Bitcoin Wiki](https://en.bitcoin.it/wiki/Network)
 - [Geth Source - Bootnodes](https://github.com/ethereum/go-ethereum/blob/master/params/bootnodes.go)
+
+### 비트코인
+- [Bitcoin P2P Network - Bitcoin Wiki](https://en.bitcoin.it/wiki/Network)
+- [Bitcoin Protocol Documentation](https://en.bitcoin.it/wiki/Protocol_documentation)
+- [BIP 152 - Compact Block Relay](https://github.com/bitcoin/bips/blob/master/bip-0152.mediawiki)
+- [BIP 155 - addrv2 (Tor/I2P 지원)](https://github.com/bitcoin/bips/blob/master/bip-0155.mediawiki)
+- [BIP 324 - v2 Transport Protocol (P2P 암호화)](https://github.com/bitcoin/bips/blob/master/bip-0324.mediawiki)
+- [BIP 330 - Erlay (효율적 Tx 릴레이)](https://github.com/bitcoin/bips/blob/master/bip-0330.mediawiki)
+- [Bitcoin Core Source - chainparams.cpp (DNS Seeds)](https://github.com/bitcoin/bitcoin/blob/master/src/kernel/chainparams.cpp)
