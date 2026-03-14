@@ -1,115 +1,23 @@
-# CS Knowledge Base
+<div align="center">
 
-헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 저장소입니다.
+# ✨ CS Knowledge Base ✨
+
+**실무에서 매일매일 마주치는 새로운 지식들을 주제별로 정리하는 모음집입니다.**
+
+백엔드 개발자로 일하면서 헷갈리거나 깊이 파고들었던 CS 지식들을 기록하고 있습니다.<br/>
+현장에서 부딪히며 배운 내용들이 다른 개발자분들에게도 도움이 되길 바랍니다.<br/>
+도움이 되었다면 ⭐ 눌러주시면 감사하겠습니다🙇🏻‍♂️
 
 📖 **블로그**: [https://iamyunjuda.github.io/cs-knowledge-base/](https://iamyunjuda.github.io/cs-knowledge-base/)
 
-## 목차
+---
 
-### Java / JVM
+> 🚨 **오류 및 제보 안내**<br/>
+> 잘못된 내용이나 오탈자를 발견하시면 [Issue](https://github.com/iamyunjuda/cs-knowledge-base/issues)로 알려주세요.<br/>
+> 출처가 누락된 내용이 있다면 말씀해 주시면 즉시 반영하겠습니다.
 
-- [JVM 동작 원리 — 다른 언어와의 비교 및 버전별 변화](java-jvm/jvm-internals.md)
-  - JVM의 코드 실행 과정, HotSpot Tiered Compilation, 다른 언어(C/C++, Python, C#, Go, JS)와의 실행 모델 비교, Java 버전별 JVM 주요 변화
-- [JVM 메모리 구조](java-jvm/jvm-memory-structure.md)
-  - Heap(세대별 구조, G1GC, ZGC), Method Area(PermGen → Metaspace), JVM Stack, String Pool, Direct Memory, 주요 OOM 에러 정리
+</div>
 
-### Network
+---
 
-- [HTTP/HTTPS와 TCP의 관계](network/http-tcp-relationship.md)
-  - TCP 위에서 동작하는 HTTP/HTTPS/WebSocket, 프로토콜 계층 구조, localhost와 DNS 해석 순서, hosts 파일 활용
-- [L4 / L7 로드밸런서 — 차이점과 실무 선택 기준](network/l4-l7-load-balancer.md)
-  - L4(IP+Port) vs L7(HTTP 내용) 동작 차이, NAT/DSR 방식, TLS 종료, K8s Service(L4)+Ingress(L7) 구조, AWS NLB vs ALB 선택 기준, gRPC 로드밸런싱
-- [VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가](network/vpn-and-traffic-inspection.md)
-  - VPN 프로토콜별 비교(PPTP~WireGuard), GFW의 L3/L4/L7 차단 메커니즘, DPI 심층 패킷 검사, 중국에서 되는 VPN vs 안 되는 VPN, Trojan/V2Ray 우회 원리
-- [프록시(Proxy)와 리버스 프록시(Reverse Proxy)](network/proxy-reverse-proxy.md)
-  - Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시
-- [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](network/websocket-deep-dive.md)
-  - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
-
-### Database
-
-- [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](database/cache-stampede-solving.md)
-  - Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략
-- [MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략](database/mongodb-replication-optimization.md)
-  - mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null/missing 인덱스 처리(Partial/Sparse Index), Replica Set 복제 지연 원인 분석, Causal Consistency Session, Write-Through Cache, CQRS, Change Stream 실시간 전략
-
-### Infra / 인프라 미들웨어
-
-- [Kafka 심화 — 정합성, 순서 보장, 핵심 옵션 총정리](infra/kafka-deep-dive.md)
-  - Partition 기반 순서 보장, Partition Key, acks(0/1/all), ISR, enable.idempotence, Consumer offset 관리(auto/manual), At Least Once/Exactly Once, Rebalancing, CooperativeStickyAssignor, 실무 설정 가이드
-- [캐싱 전략 심층 분석 — 호텔 예약 vs 콘서트/쿠폰 시스템](infra/cache-strategy-hotel-vs-concert.md)
-  - 멀티 레이어 캐싱(L1 Local/L2 Redis/L3 DB), 캐시 무효화 흐름(DEL+Kafka evict), Stale 윈도우, Cache Stampede 방지(setNx+spin retry), 호텔(읽기 heavy→캐시) vs 콘서트(쓰기 heavy→Redis DECR), Lua Script 중복 방지, Redis 멀티 노드 동시성 보장
-- [Redis 장애 시나리오 분석 및 대응 전략 — 10만 트래픽 호텔 예약 시스템](infra/redis-failure-strategies.md)
-  - Redis 4가지 용도(캐시/분산락/Rate Limit/세션), 장애 시나리오(완전 다운/Slow Redis/부분 장애), Circuit Breaker(Resilience4j), 2-Tier 캐싱(Caffeine+Redis), 분산 락 폴백(DB 비관적 락 유지), Redis Sentinel vs Cluster, 장애 대응 플레이북
-
-### Blockchain / Web3
-
-- [Web3 / 지갑 / 이더리움 네트워크 생태계 — 백엔드 개발자를 위한 총정리](blockchain/web3-ethereum-ecosystem.md)
-  - Web2 vs Web3 차이, 이더리움 구조(EVM/Gas/EIP-1559), EOA/CA 계정 체계, HD Wallet(BIP-39/44), 스마트 컨트랙트(Solidity), DeFi/NFT/ERC 토큰 표준, L2(Optimistic/ZK Rollup), SIWE 인증, 이벤트 인덱싱, 트랜잭션 관리, 참고 레포 정리
-- [블록체인 Tx 엣지 케이스 — 패턴을 넘어 실전에서 터지는 것들](blockchain/blockchain-tx-edge-cases.md)
-  - Tx 상태 불확실성(Pending/Lost 복구), Reorg 감지·대응(Confirmation 단계별 처리), Nonce Gap/충돌(NonceManager, 멀티 월렛 풀), RPC 노드 장애(멀티 RPC 폴백), EIP-1559 가스비 급등(동적 계산, 큐잉), 서비스별 전략 차이, Gap Recovery
-- [블록체인 서비스 DB 스키마 설계 — 트랜잭션 무결성과 정합성](blockchain/blockchain-db-schema-design.md)
-  - Tx 테이블(멱등성 키, 상태 전이 이력), 지갑/입금 주소 관리, 이벤트 인덱싱 스키마, 잔액 원장(이중 기장), Outbox 패턴, 비관적 잠금, Reconciliation, NUMERIC(78,0), 인덱스/파티셔닝 전략
-- [블록체인 모니터링 시스템 — 설계, 지표, 알림, 운영](blockchain/blockchain-monitoring-system.md)
-  - Tx 상태/Nonce/가스비/지갑 잔액/RPC/이벤트 리스너 모니터링 지표, Prometheus+Grafana 아키텍처, 알림 등급(P1~P3) 설계, 대시보드 레이아웃, 온체인 감시(Defender/Forta), 백오피스 연동, 인시던트 대응 플레이북
-- [합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality](blockchain/consensus-mechanisms.md)
-  - PoW 채굴/난이도 조정/51% 공격, PoS Validator/Slashing/Epoch, PoW vs PoS 비교, Block Finality(확률적 vs 결정적), Reorg 심화(PoS Reorg, 감지 시스템), DPoS/PBFT/PoA/PoH, The Merge 전후 변화
-- [ERC 토큰 표준 심화 — ERC-20, 721, 1155, 4337, 백엔드 구현](blockchain/erc-token-standards.md)
-  - ERC-20(approve/transferFrom, decimals 함정, 비표준 토큰), ERC-721(NFT, tokenURI, 메타데이터), ERC-1155(멀티 토큰, 배치 전송, 가스 효율), ERC-4337(계정 추상화, Bundler, Paymaster), ERC-2612(Permit), 거래소 토큰 상장 체크리스트
-- [풀노드 운영 — Geth, OpenEthereum(Parity), 동기화, 유지보수](blockchain/full-node-operations.md)
-  - Full/Archive/Light Node 차이, Geth 설치·설정·동기화 모드(snap/full/archive), Execution+Consensus 클라이언트, 하드웨어 요구사항, Pruning, 하드포크 대응, JSON-RPC 보안 설정, 멀티노드 아키텍처, 클라이언트 다양성
-- [키 관리 및 보안 시스템 — KMS, HSM, MPC, 서명 아키텍처](blockchain/key-management-security.md)
-  - HSM 물리적 보안, AWS/GCP KMS 서명 흐름, MPC(TSS/DKG) vs 멀티시그, Hot/Warm/Cold Wallet 계층 구조, 서명 파이프라인(Policy Engine), 키 순환, 보안 감사, 실제 사고 사례(Ronin/Atomic/Slope)
-- [스마트 컨트랙트 & dApp 개발 — 개발 라이프사이클, 테스트, 보안, 배포](blockchain/smart-contract-dapp-development.md)
-  - Hardhat vs Foundry, 테스트 전략(유닛/Fuzz/Invariant/Fork), 보안 취약점(Reentrancy/Flash Loan/Access Control), CEI 패턴, Proxy 업그레이드(UUPS/Transparent), dApp 백엔드 아키텍처, The Graph, Meta-Transaction, Solidity Clean Code
-- [VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수](blockchain/vasp-wallet-operations.md)
-  - VASP 정의/유형, 거래소 지갑 구조(Sweep/Omnibus), 입출금 처리 플로우, Travel Rule(FATF/특금법/CODE/VerifyVASP), AML/KYC 연동, 주소 귀속 확인, 거래소 백엔드 시스템 구성, 멀티체인 지원
-
-### OS / 운영체제
-
-- [CPU, RAM, SSD, HDD — 컴퓨터 핵심 부품의 근본적 차이와 트레이드오프](os/ssd-hdd-ram-comparison.md)
-  - CPU 구조(Register/Cache/ALU), Cache Hit/Miss, HDD 물리적 한계(Seek/Rotation), SSD NAND Flash, SATA vs NVMe, RAM DRAM 동작, 저장장치 계층별 성능 비교, DB 인덱스/Redis/Kafka와의 연관
-- [epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프](os/epoll-kqueue-io-multiplexing.md)
-  - select/poll 한계, epoll 동작 원리(LT/ET), kqueue 차이점, io_uring 공유 메모리 링 버퍼, Nginx/Redis/Node.js/Netty가 사용하는 I/O 모델, libuv/mio 크로스 플랫폼 추상화
-- [비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux](os/async-processing-comparison.md)
-  - Thread-per-Request vs Event Loop, Netty 구조, WebFlux(Reactor), Kotlin Coroutine suspend, Java Virtual Thread(Loom), 실무 선택 기준
-- [언어별 비동기 구현 방식 — 내부 동작 원리부터 프레임워크 주의점까지](os/async-patterns-by-language.md)
-  - JS/Node.js(Event Loop, libuv), Python(asyncio, GIL), Go(Goroutine, GMP), Java(CompletableFuture, Virtual Thread), Kotlin(Structured Concurrency), C#(async/await, SynchronizationContext), Rust(Future, tokio), 리액티브 프로그래밍(Reactive Streams, Backpressure, Mono/Flux, RxJS, Kotlin Flow), 프레임워크별 주의점
-- [운영체제 구조와 커널(Kernel) 심화](os/kernel-and-os-structure.md)
-  - 유저 모드 vs 커널 모드, CPU Ring 구조, 커널 구성 요소(프로세스/메모리/파일시스템/네트워크), Monolithic vs Microkernel, Linux 커널과 컨테이너 기술의 관계
-- [커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장](os/kernel-easy-guide.md)
-  - 커널의 5가지 역할(프로세스/메모리/파일시스템/디바이스/네트워크), 유저 모드 vs 커널 모드 쉬운 설명, System Call, Java/Spring 개발자가 알아야 하는 커널 이슈
-- [이벤트 기반 시스템에서의 Lock 처리 — 초고트래픽 환경의 동시성 제어](os/event-driven-locking.md)
-  - 분산 Lock(Redis/Redisson/DB), 0.000001초 차이 요청 처리, 원자적 연산(DECR), 메시지 큐 직렬화, Fencing Token, 선착순 쿠폰 발급 설계
-- [재고 동기화와 Lock 전략 — 이커머스 동시성 문제의 모든 것](os/inventory-lock-strategy.md)
-  - Lost Update, 비관적/낙관적 Lock, Redis DECR 재고 차감, Redis-DB 불일치 해결(DLQ/Outbox/Reconciliation), 장바구니 다중 차감(Lua/Saga), 면접 답변 전략
-- [컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가](os/container-vs-vm.md)
-  - VM vs Container 구조 비교, Namespace/cgroups/OverlayFS, Docker와 K8s의 관계, 컨테이너 보안(gVisor/Kata), 컨테이너 런타임(containerd/CRI-O/Podman)
-
-### Design Pattern / 설계 패턴
-
-- [분산 시스템 핵심 패턴 — 동시성, 트랜잭션, 메시징, 데이터 정합성](design-pattern/distributed-system-patterns.md)
-  - 비관적/낙관적/분산 락, ACID vs BASE, 2PC/Saga/Outbox 패턴, 전달 보장 모델(At-Least-Once), 멱등성, Block Finality/Nonce/ERC-20/HD Wallet/Gas, Circuit Breaker/CEI/Graceful Degradation, Reconciliation/Source of Truth/Eventual Consistency, CAP 정리, Node.js 이벤트 루프, Reentrancy 공격
-
-### Spring
-
-- [판매 통계 API가 느려진 진짜 이유 — DB 커넥션 풀 고갈 추적기](spring/api-latency-db-connection-pool.md)
-  - HikariCP 커넥션 풀 고갈 원인 분석, 예외 없는 500 에러의 정체, @Transactional AOP 프록시 단 실패, 커넥션 풀 모니터링/사이즈 적정화, 슬로우 쿼리/트랜잭션 최적화
-- [@Transactional과 예외 처리 — 커넥션 풀 타임아웃이 500인데 로그가 안 남는 이유](spring/transactional-exception-flow.md)
-  - Spring 요청 처리 파이프라인, AOP 프록시 커넥션 획득 시점, CannotCreateTransactionException, 예외가 삼켜지는 4가지 시나리오, 500 vs 503 선택, 로그 없는 500 방지 체크리스트
-
-### Git
-
-- [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준](git/merge-strategies.md)
-  - Merge Commit / Rebase Merge / Squash Merge 비교, 커밋 보존 여부, 히스토리 형태 차이, Squash 후 브랜치 삭제 이유, 실무 전략 선택 기준
-
-### Map System / 지도 시스템
-
-- [공간 인덱싱과 지도 시스템 기초 — POI, 타일링, Geocoding](map-system/spatial-indexing-and-map-fundamentals.md)
-  - R-Tree/Geohash/S2/H3 공간 인덱싱, POI 데이터 모델, 지도 타일링(래스터/벡터), Geocoding/Reverse Geocoding, 경로 탐색 알고리즘(Dijkstra/A*/CH), PostGIS vs OpenSearch, 사우디 지도 특수성
-- [글로벌 로컬라이징 아키텍처 — i18n, L10n, 다국어/다지역 서비스 설계](map-system/global-localization-architecture.md)
-  - Locale 체계(BCP 47), API Locale 전달, 다국어 DB 저장 패턴(JSONB/번역 테이블), OpenSearch 다국어 분석기, 날짜/시간/통화 로컬라이징, RTL 아랍어 지원, L10n Layer 아키텍처, TMS 번역 관리
-- [대규모 지도 데이터 파이프라인 — 실시간/배치 처리, ETL, 데이터 모델링](map-system/map-data-pipeline.md)
-  - 지도 데이터 소스, Spark/Flink 배치·실시간 파이프라인, POI 중복 제거(Entity Resolution), CDC(Debezium), 영업시간 모델링, Lambda/Kappa 아키텍처, Map Matching, 데이터 품질 관리
-- [글로벌 트래픽 대응 아키텍처 — 멀티리전, CDN, 대규모 서비스 운영](map-system/global-traffic-architecture.md)
-  - 멀티리전 배포(Single-Writer + Read Replica), CDN 타일 캐싱 전략, API 성능 최적화, Circuit Breaker/Graceful Degradation, Rate Limiting, 분산 추적(OpenTelemetry), 해외 개발자 협업
+📚 **[전체 목차 보기 →](SUMMARY.md)**
