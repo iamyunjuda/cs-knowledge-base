@@ -10,6 +10,8 @@
   - HikariCP ConcurrentBag/ThreadLocal 최적화, 커넥션 획득·반납 흐름, @Transactional 유무에 따른 커넥션 생명주기, MySQL(멀티스레드) vs PostgreSQL(멀티프로세스) vs Oracle 비교, 커넥션 풀 사이즈 공식, R2DBC
 - [Spring 요청 처리 사각지대 — 로그가 안 남는 에러들의 정체](topics/spring/request-processing-blind-spots.md)
   - Tomcat 스레드 풀 포화 모니터링(Micrometer/JMX), SimpleAsyncTaskExecutor 예외 삼킴 원인, Filter 단 JWT 검증과 예외 처리, ResponseBody 직렬화 실패(committed 후 문제), Servlet Container vs Spring 관계
+- [Tomcat Thread Pool vs DB Connection Pool — 완전히 다른 두 풀의 역할과 관계](topics/spring/tomcat-vs-db-thread-pool.md)
+  - Tomcat 워커 스레드 풀 vs HikariCP 커넥션 풀 차이, 요청 흐름에서의 위치, 크기 불균형(200 vs 10) 이유, 풀 고갈 시 연쇄 장애, @Transactional 범위와 커넥션 점유, 모니터링 키 메트릭
 
 ### Java / JVM
 
