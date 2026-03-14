@@ -377,7 +377,106 @@ public class OrderService {
 
 ## 헷갈렸던 포인트
 
-### Q1. "코루틴을 쓴다 = WebFlux를 써야 한다"인가?
+### Q1. "MVC에서 코루틴 써도 결국 Tomcat 스레드는 잡히는 거 아닌가요?"
+
+**맞다. 정확한 지적이다.** 이것이 Spring MVC + Coroutine의 핵심 한계.
+
+```
+[Spring MVC에서 코루틴을 쓸 때 실제로 일어나는 일]
+
+Tomcat Thread-1:
+├── 요청 수신
+├── Controller 진입
+├── runBlocking {                    ← ★ Tomcat 스레드가 여기서 블로킹!
+│     coroutineScope {
+│       async(IO) { getOrder() }     → IO 스레드풀에서 실행
+│       async(IO) { getPayment() }   → IO 스레드풀에서 실행
+│       async(IO) { getDelivery() }  → IO 스레드풀에서 실행
+│
+│       ↓ 세 작업이 IO 스레드에서 병렬로 실행되는 동안
+│       ↓ Tomcat Thread-1은 여기서 대기 중... (아무것도 안 함)
+│
+│       await(), await(), await()    → 결과 수집
+│     }
+│   }                                ← 여기서 풀림
+├── 응답 반환
+└── Tomcat Thread-1 반납
+
+★ 코루틴 덕분에 3개 작업은 병렬로 실행됨 → 총 시간 단축 ✅
+★ 하지만 Tomcat 스레드는 전체 시간 동안 잡혀 있음 ❌
+```
+
+```
+그러면 코루틴의 이점이 뭔가?
+
+[코루틴 없이 순차 실행]
+Tomcat Thread-1: ────Order(50ms)────Payment(2000ms)────Delivery(100ms)────
+                                                              총 2150ms 점유
+
+[코루틴으로 병렬 실행]
+Tomcat Thread-1: ────runBlocking(2000ms)────
+IO Thread-1:     ────Order(50ms)──
+IO Thread-2:     ────Payment(2000ms)──────
+IO Thread-3:     ────Delivery(100ms)───
+                              총 2000ms 점유
+
+★ Tomcat 스레드 점유 시간: 2150ms → 2000ms (줄긴 줌)
+★ 하지만 여전히 Tomcat 스레드 1개를 2초 동안 잡고 있음
+★ 동시 요청 200개 넘으면 → Tomcat 스레드 고갈 → 같은 문제
+```
+
+**면접에서 이렇게 답하면 좋다:**
+
+```
+"맞습니다. Spring MVC에서는 코루틴을 써도
+ Tomcat 스레드가 응답 완료까지 점유됩니다.
+
+ 코루틴의 이점은 '여러 I/O 작업을 병렬로 실행해서
+ 총 대기 시간을 줄이는 것'이지,
+ 'Tomcat 스레드를 해방하는 것'이 아닙니다.
+
+ Tomcat 스레드까지 해방하려면 두 가지 방법이 있습니다:
+
+ ① Spring WebFlux로 전환
+    → Controller가 suspend를 직접 지원
+    → Tomcat 스레드 대신 Event Loop 사용
+    → 스레드 블로킹 없음
+
+ ② Spring MVC + DeferredResult/Callable
+    → 요청 처리를 별도 스레드로 넘기고 Tomcat 스레드 즉시 반환
+    → 하지만 별도 스레드가 필요하므로 근본 해결은 아님
+
+ 결국 '스레드를 점유하지 않는 진짜 비동기'를 원하면
+ WebFlux가 답이고, MVC에서 코루틴은
+ '병렬화를 통한 응답 시간 단축'에 의미가 있습니다."
+```
+
+```
+[정리: MVC에서 코루틴의 가치]
+
+                        순차 실행    코루틴 병렬    WebFlux+코루틴
+Tomcat 스레드 점유 시간   2150ms      2000ms        0ms (논블로킹)
+응답 시간                2150ms      2000ms        2000ms
+스레드 효율              ❌ 낭비      ❌ 여전히 점유  ✅ 스레드 해방
+
+★ MVC + 코루틴 = "응답 시간 단축"에는 의미 있음
+★ MVC + 코루틴 ≠ "스레드 효율 개선"
+★ 스레드 효율까지 원하면 = WebFlux
+```
+
+#### 그러면 MVC에서 CompletableFuture도 같은 문제 아닌가?
+
+```java
+// 맞다. CompletableFuture도 .join()하는 순간 Tomcat 스레드 블로킹.
+var result = CompletableFuture.allOf(f1, f2, f3).join();  // 여기서 블로킹
+
+// MVC의 Thread-per-Request 모델에서는 피할 수 없는 한계.
+// 이건 코루틴의 문제가 아니라 "MVC 모델 자체의 특성".
+```
+
+---
+
+### Q1-1. "코루틴을 쓴다 = WebFlux를 써야 한다"인가?
 
 **아니다.** 하지만 **WebFlux와 쓸 때 가장 효과적**이다.
 
