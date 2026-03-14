@@ -6,6 +6,18 @@
   - HikariCP 커넥션 풀 고갈 원인 분석, 예외 없는 500 에러의 정체, @Transactional AOP 프록시 단 실패, 커넥션 풀 모니터링/사이즈 적정화, 슬로우 쿼리/트랜잭션 최적화
 - [@Transactional과 예외 처리 — 커넥션 풀 타임아웃이 500인데 로그가 안 남는 이유](topics/spring/transactional-exception-flow.md)
   - Spring 요청 처리 파이프라인, AOP 프록시 커넥션 획득 시점, CannotCreateTransactionException, 예외가 삼켜지는 4가지 시나리오, 500 vs 503 선택, 로그 없는 500 방지 체크리스트
+- [DB 커넥션 풀 동작 원리 — HikariCP 내부 구조부터 DB별 스레드 모델까지](topics/spring/connection-pool-internals.md)
+  - HikariCP ConcurrentBag/ThreadLocal 최적화, 커넥션 획득·반납 흐름, @Transactional 유무에 따른 커넥션 생명주기, MySQL(멀티스레드) vs PostgreSQL(멀티프로세스) vs Oracle 비교, 커넥션 풀 사이즈 공식, R2DBC
+- [Spring 요청 처리 사각지대 — 로그가 안 남는 에러들의 정체](topics/spring/request-processing-blind-spots.md)
+  - Tomcat 스레드 풀 포화 모니터링(Micrometer/JMX), SimpleAsyncTaskExecutor 예외 삼킴 원인, Filter 단 JWT 검증과 예외 처리, ResponseBody 직렬화 실패(committed 후 문제), Servlet Container vs Spring 관계
+- [SimpleAsyncTaskExecutor vs ThreadPoolTaskExecutor — Spring 비동기 실행기의 차이와 선택 기준](topics/spring/task-executor-comparison.md)
+  - SimpleAsyncTaskExecutor(매번 new Thread) vs ThreadPoolTaskExecutor(풀 재사용) 내부 구조, core/max/queue 동작 흐름, RejectedExecutionHandler 정책(CallerRunsPolicy), 용도별 다중 Executor 설정, Virtual Thread 조합, 모니터링
+- [면접 실전 — 서비스 하나가 느릴 때 코루틴/비동기 해결 전략](topics/spring/coroutine-async-interview-deep-dive.md)
+  - 면접 시나리오별 해결책(병렬/비동기분리/캐싱), Coroutine 설정·Dispatcher, Controller vs Service 역할, coroutineScope vs supervisorScope, Spring MVC vs WebFlux 선택, CompletableFuture 대안, 집요한 후속 질문 대비
+- [Tomcat 내부 구조 — Catalina, Coyote, Jasper는 각각 뭔가](topics/spring/tomcat-architecture.md)
+  - Coyote(HTTP 엔진) vs Catalina(Servlet 엔진) vs Jasper(JSP 엔진), Server→Service→Engine→Host→Context 계층, Valve Pipeline vs Filter Chain, catalina.out 로그, ErrorReportValve가 HTML을 반환하는 이유, 내장 Tomcat 설정
+- [Tomcat Thread Pool vs DB Connection Pool — 완전히 다른 두 풀의 역할과 관계](topics/spring/tomcat-vs-db-thread-pool.md)
+  - Tomcat 워커 스레드 풀 vs HikariCP 커넥션 풀 차이, 요청 흐름에서의 위치, 크기 불균형(200 vs 10) 이유, 풀 고갈 시 연쇄 장애, @Transactional 범위와 커넥션 점유, 모니터링 키 메트릭
 
 ### Java / JVM
 
@@ -13,6 +25,8 @@
   - JVM의 코드 실행 과정, HotSpot Tiered Compilation, 다른 언어(C/C++, Python, C#, Go, JS)와의 실행 모델 비교, Java 버전별 JVM 주요 변화
 - [JVM 메모리 구조](topics/java-jvm/jvm-memory-structure.md)
   - Heap(세대별 구조, G1GC, ZGC), Method Area(PermGen → Metaspace), JVM Stack, String Pool, Direct Memory, 주요 OOM 에러 정리
+- [Java Thread vs CompletableFuture vs Kotlin Coroutine — 근본적으로 다른 계층의 개념](topics/java-jvm/thread-future-coroutine-comparison.md)
+  - Thread(OS 자원) vs CompletableFuture(결과 컨테이너/API) vs Coroutine(언어 기능), 추상화 레벨 비교, 동일 문제 세 가지 풀이, ForkJoinPool, Virtual Thread 포지션, Structured Concurrency
 
 ### Network
 
@@ -31,6 +45,8 @@
 
 - [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](topics/database/cache-stampede-solving.md)
   - Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략
+- [ORM vs ODM vs OOM — 객체 매핑 기술의 차이](topics/database/orm-odm-oom-comparison.md)
+  - ORM(객체↔RDB), ODM(객체↔Document DB), OOM(객체↔객체) 비교, JPA/Hibernate vs Mongoose vs MapStruct, MyBatis는 SQL Mapper, Spring Data 추상화
 - [MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략](topics/database/mongodb-replication-optimization.md)
   - mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null/missing 인덱스 처리(Partial/Sparse Index), Replica Set 복제 지연 원인 분석, Causal Consistency Session, Write-Through Cache, CQRS, Change Stream 실시간 전략
 
@@ -76,6 +92,8 @@
   - Thread-per-Request vs Event Loop, Netty 구조, WebFlux(Reactor), Kotlin Coroutine suspend, Java Virtual Thread(Loom), 실무 선택 기준
 - [언어별 비동기 구현 방식 — 내부 동작 원리부터 프레임워크 주의점까지](topics/os/async-patterns-by-language.md)
   - JS/Node.js(Event Loop, libuv), Python(asyncio, GIL), Go(Goroutine, GMP), Java(CompletableFuture, Virtual Thread), Kotlin(Structured Concurrency), C#(async/await, SynchronizationContext), Rust(Future, tokio), 리액티브 프로그래밍(Reactive Streams, Backpressure, Mono/Flux, RxJS, Kotlin Flow), 프레임워크별 주의점
+- [면접에서 "비동기를 구현해보라"고 했을 때 — 접근법과 답변 전략](topics/os/async-implementation-interview.md)
+  - 비동기 본질(커피숍 비유), 3단계 답변 전략, Thread+Callback→Future 패턴 구현, 언어별 답변(Java/JS/Kotlin/Python), 후속 질문 대비(Event Loop, Non-blocking vs 비동기, 트레이드오프)
 - [운영체제 구조와 커널(Kernel) 심화](topics/os/kernel-and-os-structure.md)
   - 유저 모드 vs 커널 모드, CPU Ring 구조, 커널 구성 요소(프로세스/메모리/파일시스템/네트워크), Monolithic vs Microkernel, Linux 커널과 컨테이너 기술의 관계
 - [커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장](topics/os/kernel-easy-guide.md)
