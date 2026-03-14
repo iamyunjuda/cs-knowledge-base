@@ -2,6 +2,8 @@
 title: "스마트 컨트랙트 & dApp 개발 — 개발 라이프사이클, 테스트, 보안, 배포"
 parent: Blockchain / Web3
 nav_order: 9
+tags: [Hardhat, Foundry, Solidity, Reentrancy, Proxy, UUPS, The Graph, 스마트컨트랙트]
+description: "Hardhat vs Foundry, 테스트 전략, 보안 취약점(Reentrancy/Flash Loan), Proxy 업그레이드, dApp 백엔드 아키텍처를 정리합니다."
 ---
 
 # 스마트 컨트랙트 & dApp 개발 — 개발 라이프사이클, 테스트, 보안, 배포

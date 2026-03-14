@@ -4,6 +4,8 @@
 
 - [판매 통계 API가 느려진 진짜 이유 — DB 커넥션 풀 고갈 추적기](topics/spring/api-latency-db-connection-pool.md)
   - HikariCP 커넥션 풀 고갈 원인 분석, 예외 없는 500 에러의 정체, @Transactional AOP 프록시 단 실패, 커넥션 풀 모니터링/사이즈 적정화, 슬로우 쿼리/트랜잭션 최적화
+- [@Transactional과 예외 처리 — 커넥션 풀 타임아웃이 500인데 로그가 안 남는 이유](topics/spring/transactional-exception-flow.md)
+  - Spring 요청 처리 파이프라인, AOP 프록시 커넥션 획득 시점, CannotCreateTransactionException, 예외가 삼켜지는 4가지 시나리오, 500 vs 503 선택, 로그 없는 500 방지 체크리스트
 
 ### Java / JVM
 

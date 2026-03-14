@@ -2,6 +2,8 @@
 title: "epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프"
 parent: OS / 운영체제
 nav_order: 2
+tags: [epoll, kqueue, io_uring, select, poll, I/O멀티플렉싱, Nginx, Redis, libuv]
+description: "select/poll 한계, epoll LT/ET 동작 원리, kqueue, io_uring 공유 메모리 링 버퍼, Nginx/Redis/Node.js I/O 모델을 정리합니다."
 ---
 
 # epoll, kqueue, io_uring — I/O 멀티플렉싱의 진화와 트레이드오프

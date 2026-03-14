@@ -2,6 +2,8 @@
 title: "MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략"
 parent: Database
 nav_order: 2
+tags: [MongoDB, mongos, mongod, Replica Set, Sharding, Partial Index, Change Stream, CQRS]
+description: "mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null 인덱스 처리, Replica Set 복제 지연 원인과 해결 전략을 정리합니다."
 ---
 
 # MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략

@@ -2,6 +2,8 @@
 title: "합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality"
 parent: Blockchain / Web3
 nav_order: 5
+tags: [PoW, PoS, Validator, Slashing, Finality, Reorg, 51%공격, The Merge]
+description: "PoW 채굴/난이도 조정, PoS Validator/Slashing, Block Finality, Reorg 심화, DPoS/PBFT/PoA/PoH, The Merge 전후 변화를 정리합니다."
 ---
 
 # 합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality

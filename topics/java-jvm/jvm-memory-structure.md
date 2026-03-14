@@ -2,6 +2,8 @@
 title: JVM 메모리 구조
 parent: Java / JVM
 nav_order: 2
+tags: [Heap, Metaspace, G1GC, ZGC, String Pool, OOM, 메모리구조, GC, PermGen]
+description: "JVM Heap 세대별 구조, G1GC·ZGC, Metaspace, String Pool, Direct Memory, 주요 OOM 에러 원인과 해결 방법을 정리합니다."
 ---
 
 # JVM 메모리 구조

@@ -1,7 +1,10 @@
 title: CS Knowledge Base
-description: 헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 블로그
+description: 헷갈리기 쉬운 CS 지식들을 주제별로 정리하는 블로그 — Java, Spring, Network, OS, Database, Kafka, Redis, Blockchain, 디자인 패턴, Git 등 백엔드 개발자를 위한 CS 면접 대비 지식 저장소
 url: "https://iamyunjuda.github.io"
 baseurl: "/cs-knowledge-base"
+lang: ko
+locale: ko_KR
+author: iamyunjuda
 
 # 테마 (Gemfile에서 직접 설치)
 theme: just-the-docs
@@ -28,6 +31,12 @@ color_scheme: light
 search_enabled: true
 search:
   heading_level: 3
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 10
+  tokenizer_separator: /[\s\-/]+/
+  rel_url: true
+  button: true
 heading_anchors: true
 footer_content: "CS Knowledge Base &mdash; 헷갈리기 쉬운 CS 지식 정리"
 

@@ -2,6 +2,8 @@
 title: "대규모 지도 데이터 파이프라인 — 실시간/배치 처리, ETL, 데이터 모델링"
 parent: Map System / 지도 시스템
 nav_order: 3
+tags: [ETL, Spark, Flink, CDC, Debezium, Map Matching, Lambda, 데이터파이프라인]
+description: "지도 데이터 소스, Spark/Flink 배치·실시간 파이프라인, POI 중복 제거, CDC Debezium, Lambda/Kappa 아키텍처를 정리합니다."
 ---
 
 # 대규모 지도 데이터 파이프라인 — 실시간/배치 처리, ETL, 데이터 모델링

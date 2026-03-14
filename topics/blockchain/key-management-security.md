@@ -2,6 +2,8 @@
 title: "키 관리 및 보안 시스템 — KMS, HSM, MPC, 서명 아키텍처"
 parent: Blockchain / Web3
 nav_order: 8
+tags: [KMS, HSM, MPC, 멀티시그, Hot Wallet, Cold Wallet, 키관리, 서명]
+description: "HSM/KMS/MPC 비교, Hot/Warm/Cold Wallet 계층 구조, 서명 파이프라인, 키 순환, 실제 보안 사고 사례(Ronin/Atomic)를 정리합니다."
 ---
 
 # 키 관리 및 보안 시스템 — KMS, HSM, MPC, 서명 아키텍처

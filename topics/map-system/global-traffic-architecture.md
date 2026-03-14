@@ -2,6 +2,8 @@
 title: "글로벌 트래픽 대응 아키텍처 — 멀티리전, CDN, 대규모 서비스 운영"
 parent: Map System / 지도 시스템
 nav_order: 4
+tags: [멀티리전, CDN, Rate Limiting, OpenTelemetry, Circuit Breaker, 글로벌트래픽]
+description: "멀티리전 배포, CDN 타일 캐싱, API 성능 최적화, Circuit Breaker, Rate Limiting, 분산 추적(OpenTelemetry) 전략을 정리합니다."
 ---
 
 # 글로벌 트래픽 대응 아키텍처 — 멀티리전, CDN, 대규모 서비스 운영

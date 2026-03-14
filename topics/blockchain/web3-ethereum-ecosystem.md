@@ -2,6 +2,8 @@
 title: "Web3 / 지갑 / 이더리움 네트워크 생태계 — 백엔드 개발자를 위한 총정리"
 parent: Blockchain / Web3
 nav_order: 1
+tags: [Web3, 이더리움, EVM, Gas, HD Wallet, DeFi, NFT, L2, Rollup, SIWE]
+description: "Web2 vs Web3 차이, 이더리움 EVM/Gas/EIP-1559, HD Wallet, 스마트 컨트랙트, DeFi/NFT, L2 Rollup 등 백엔드 개발자를 위한 Web3 총정리입니다."
 ---
 
 # Web3 / 지갑 / 이더리움 네트워크 생태계 — 백엔드 개발자를 위한 총정리

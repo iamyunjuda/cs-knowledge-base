@@ -2,6 +2,8 @@
 title: "풀노드 운영 — Geth, OpenEthereum(Parity), 동기화, 유지보수"
 parent: Blockchain / Web3
 nav_order: 7
+tags: [Geth, 풀노드, snap sync, archive, Pruning, JSON-RPC, Consensus Client]
+description: "Geth 설치·동기화 모드(snap/full/archive), Consensus Client, 하드웨어 요구사항, Pruning, JSON-RPC 보안, 멀티노드 아키텍처를 정리합니다."
 ---
 
 # 풀노드 운영 — Geth, OpenEthereum(Parity), 동기화, 유지보수

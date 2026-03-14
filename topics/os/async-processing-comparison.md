@@ -2,6 +2,8 @@
 title: "비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux"
 parent: OS / 운영체제
 nav_order: 3
+tags: [비동기, Spring MVC, Netty, WebFlux, Coroutine, Virtual Thread, Event Loop]
+description: "Thread-per-Request vs Event Loop, Netty, WebFlux Reactor, Kotlin Coroutine, Java Virtual Thread 비교와 실무 선택 기준을 정리합니다."
 ---
 
 # 비동기 처리 방식 비교 — Spring MVC, Netty, Coroutine, WebFlux 그리고 그 이면

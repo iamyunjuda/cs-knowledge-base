@@ -2,6 +2,8 @@
 title: "분산 시스템 핵심 패턴 — 동시성, 트랜잭션, 메시징, 데이터 정합성"
 parent: Design Pattern / 설계 패턴
 nav_order: 1
+tags: [분산시스템, Saga, Outbox, 2PC, 멱등성, CAP, Circuit Breaker, Eventual Consistency]
+description: "비관적/낙관적/분산 락, 2PC/Saga/Outbox, 멱등성, Circuit Breaker, CAP 정리, Eventual Consistency 등 분산 시스템 핵심 패턴을 총정리합니다."
 ---
 
 # 분산 시스템 핵심 패턴 — 동시성, 트랜잭션, 메시징, 데이터 정합성

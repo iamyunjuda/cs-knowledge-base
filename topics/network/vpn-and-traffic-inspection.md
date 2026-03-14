@@ -2,6 +2,8 @@
 title: VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가
 parent: Network
 nav_order: 3
+tags: [VPN, GFW, DPI, WireGuard, Trojan, V2Ray, 패킷검사, 중국, 차단우회]
+description: "VPN 프로토콜별 비교(PPTP~WireGuard), 중국 GFW의 DPI 차단 메커니즘, Trojan/V2Ray 우회 원리를 정리합니다."
 ---
 
 # VPN 동작 원리 — 중국 GFW는 어떻게 VPN을 막고, 어떻게 뚫는가

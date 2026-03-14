@@ -2,6 +2,8 @@
 title: "글로벌 로컬라이징 아키텍처 — i18n, L10n, 다국어/다지역 서비스 설계"
 parent: Map System / 지도 시스템
 nav_order: 2
+tags: [i18n, L10n, 다국어, Locale, BCP47, RTL, 아랍어, 번역]
+description: "Locale 체계(BCP 47), 다국어 DB 저장 패턴, OpenSearch 다국어 분석기, RTL 아랍어 지원, L10n Layer 아키텍처를 정리합니다."
 ---
 
 # 글로벌 로컬라이징 아키텍처 — i18n, L10n, 다국어/다지역 서비스 설계

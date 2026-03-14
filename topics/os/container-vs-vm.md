@@ -2,6 +2,8 @@
 title: "컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가"
 parent: OS / 운영체제
 nav_order: 9
+tags: [Docker, Kubernetes, VM, 컨테이너, Namespace, cgroups, containerd, gVisor]
+description: "VM vs Container 구조 비교, Namespace/cgroups/OverlayFS, Docker와 K8s의 관계, 컨테이너 보안과 런타임 비교를 정리합니다."
 ---
 
 # 컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가

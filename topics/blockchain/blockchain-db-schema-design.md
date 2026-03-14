@@ -2,6 +2,8 @@
 title: "블록체인 서비스 DB 스키마 설계 — 트랜잭션 무결성과 정합성"
 parent: Blockchain / Web3
 nav_order: 3
+tags: [DB스키마, 멱등성, Outbox패턴, 이중기장, 잔액원장, Reconciliation]
+description: "Tx 테이블 멱등성 키, 지갑/입금 주소 관리, 잔액 원장 이중 기장, Outbox 패턴, Reconciliation 등 블록체인 DB 스키마 설계를 정리합니다."
 ---
 
 # 블록체인 서비스 DB 스키마 설계 — 트랜잭션 무결성과 정합성

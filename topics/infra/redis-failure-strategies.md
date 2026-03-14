@@ -2,6 +2,8 @@
 title: "Redis 장애 시나리오 분석 및 대응 전략 — 10만 트래픽 호텔 예약 시스템"
 parent: Infra / 인프라 미들웨어
 nav_order: 3
+tags: [Redis, Circuit Breaker, Resilience4j, Caffeine, Sentinel, Cluster, 장애대응, 분산락]
+description: "Redis 완전 다운/Slow/부분 장애 시나리오별 대응, Circuit Breaker, 2-Tier 캐싱, Sentinel vs Cluster 비교, 장애 플레이북을 정리합니다."
 ---
 
 # Redis 장애 시나리오 분석 및 대응 전략 — 호텔 예약 시스템 10만 트래픽

@@ -2,6 +2,8 @@
 title: L4 / L7 로드밸런서 — 차이점과 실무 선택 기준
 parent: Network
 nav_order: 2
+tags: [L4, L7, 로드밸런서, NLB, ALB, NAT, DSR, TLS, Ingress, gRPC]
+description: "L4(IP+Port) vs L7(HTTP) 로드밸런서 동작 차이, NAT/DSR, TLS 종료, K8s Service+Ingress 구조, AWS NLB vs ALB 선택 기준을 정리합니다."
 ---
 
 # L4 / L7 로드밸런서 — 차이점과 실무 선택 기준
