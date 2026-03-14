@@ -198,14 +198,15 @@ fun main() {
 **그러면 Spring에서 코루틴 스코프를 어떻게 열어야 하나?**
 
 ```kotlin
-// ★ 핵심: Spring WebFlux에서는 "스코프를 직접 열 필요가 없다"
+// ★ 핵심: Spring MVC 5.3+ / WebFlux 둘 다 "스코프를 직접 열 필요가 없다"
 
 // ✅ Controller를 suspend로 선언 → Spring이 알아서 코루틴 컨텍스트 생성
 @GetMapping("/orders/{id}")
 suspend fun getOrder(@PathVariable id: Long): OrderDetail {
     return orderService.getOrderDetail(id)
-    // Spring WebFlux가 내부적으로 Mono.asCoroutine()으로 변환
+    // Spring이 내부적으로 suspend → Mono로 변환하여 비동기 처리
     // 개발자가 runBlocking이나 CoroutineScope을 직접 만들 필요 없음
+    // ★ MVC 5.3+ (Boot 2.4+)에서도 동일하게 동작!
 }
 
 // ✅ Service에서 coroutineScope 사용 — 이건 "스코프를 여는" 게 아니라
@@ -221,7 +222,7 @@ suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
 면접에서 이렇게 답했어야 한다:
 
 "코루틴 스코프는 직접 열지 않습니다.
- Spring WebFlux에서는 Controller의 suspend 함수를 선언하면
+ Spring MVC 5.3+ / WebFlux 모두 Controller의 suspend 함수를 선언하면
  Spring이 자동으로 코루틴 컨텍스트를 생성합니다.
 
  Service에서 병렬 실행이 필요할 때는 coroutineScope을 사용하는데,
@@ -274,92 +275,125 @@ suspend 함수의 규칙:
   일반 fun에서 suspend를 호출하면 → 컴파일 에러
 ```
 
-**그러면 어떻게 해야 하나? 3가지 방법:**
+**그러면 어떻게 해야 하나?**
 
 ```kotlin
-// 방법 1: Controller도 suspend로 만든다 (WebFlux — 가장 깔끔)
-@GetMapping("/orders/{id}")
-suspend fun getOrder(@PathVariable id: Long): OrderDetail {
-    return orderService.getOrderDetail(id)
-    // suspend → suspend 호출이므로 OK
-    // Spring WebFlux가 자동으로 코루틴 실행 환경을 만들어줌
-}
+// ★ Spring MVC 5.3+ 부터 Controller에서 suspend fun을 네이티브 지원!
+// ★ runBlocking 필요 없음!
 
-// 방법 2: Service를 suspend가 아닌 일반 함수로 만든다 (MVC — 권장)
-// Service 내부에서 코루틴을 캡슐화
-@Service
-class OrderService(private val customDispatcher: CoroutineDispatcher) {
+// ✅ Controller — suspend fun (Spring MVC 5.3+ / Spring Boot 2.4+)
+@RestController
+class OrderController(private val orderService: OrderService) {
 
-    // ✅ 일반 fun — Controller가 suspend일 필요 없음
-    fun getOrderDetail(id: Long): OrderDetail {
-        return runBlocking(customDispatcher) {  // 여기서만 bridge
-            val order = async { getOrder(id) }
-            val payment = async { getPayment(id) }
-            OrderDetail(order.await(), payment.await())
-        }
+    @GetMapping("/orders/{id}")
+    suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)
+        // Spring MVC가 내부적으로 suspend → Mono로 변환하여 비동기 처리
+        // runBlocking 불필요!
     }
 }
 
-// Controller는 일반 fun
-@GetMapping("/orders/{id}")
-fun getOrder(@PathVariable id: Long): OrderDetail {
-    return orderService.getOrderDetail(id)  // OK — 일반 fun
-}
-// ⚠️ 하지만 이러면 결국 runBlocking... → 차라리 CompletableFuture
-
-// 방법 3: CompletableFuture로 변환 (MVC — 가장 실용적)
+// ✅ Service — suspend fun
 @Service
 class OrderService {
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    fun getOrderDetailAsync(id: Long): CompletableFuture<OrderDetail> {
-        return scope.async {
-            coroutineScope {
-                val order = async { getOrder(id) }
-                val payment = async { getPayment(id) }
-                OrderDetail(order.await(), payment.await())
-            }
-        }.asCompletableFuture()
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        val order = async { orderRepo.findById(id) }
+        val payment = async { paymentClient.getPayment(id) }
+        OrderDetail(order.await(), payment.await())
     }
 }
+```
+
+```
+★ 이전 답변에서 "MVC는 suspend를 지원하지 않는다"고 했는데 이건 틀렸다!
+★ Spring Framework 5.3 (Spring Boot 2.4) 부터 MVC에서도 suspend를 네이티브 지원
+★ 내부적으로 suspend 함수를 Mono로 변환 → MVC의 비동기 요청 처리 활용
+
+필요한 의존성:
+  - kotlinx-coroutines-core
+  - kotlinx-coroutines-reactor  ← ★ 이게 있어야 suspend → Mono 변환이 됨
 ```
 
 ---
 
-### 2.7단계: Spring MVC + Kotlin에서 병렬 처리 — 현실적인 답
+### 2.7단계: Spring MVC + Coroutine — 실제로 가능하다! (정정)
 
 ```
-면접관: "WebFlux 얘기 말고, Spring MVC + Kotlin 환경에서
-         어떻게 병렬 처리하시겠어요?"
+이전에 "MVC에서 코루틴은 어색하다, CompletableFuture를 써라"라고 했는데,
+Spring 5.3부터 상황이 바뀌었다.
 ```
 
-**솔직한 답: Spring MVC에서 코루틴은 어색하다. 깔끔한 답이 없다.**
+#### MVC에서 suspend fun이 동작하는 원리
 
 ```
-Spring MVC + 코루틴의 근본적 문제:
+Spring MVC가 suspend fun을 감지하면:
 
-MVC의 세계: 모든 것이 동기, 블로킹, 일반 fun
-코루틴의 세계: 모든 것이 suspend, 논블로킹
+@GetMapping("/orders/{id}")
+suspend fun getOrder(id: Long): OrderDetail { ... }
 
-이 두 세계를 연결하려면 반드시 "다리(bridge)"가 필요한데,
-그 다리가 runBlocking이든 CompletableFuture든 → 결국 어색함
+내부적으로 이렇게 변환됨:
+
+① Spring이 KotlinDetector로 suspend 함수 감지
+② suspend 함수를 Mono<OrderDetail>로 변환 (coroutines-reactor 사용)
+③ Spring MVC의 비동기 요청 처리(DeferredResult와 동일한 메커니즘) 활용
+④ Tomcat 스레드를 반환하고, 코루틴 완료 시 응답 전송
+
+[실제 흐름]
+Tomcat Thread-1: 요청 수신 → suspend fun 감지 → Mono로 변환 → 스레드 반환!
+Coroutine (IO):  suspend fun 실행 → 병렬 처리 → 완료
+Tomcat Thread-N: Mono 완료 신호 수신 → 응답 전송
+
+★ Tomcat 스레드가 블로킹되지 않는다!
+★ WebFlux가 아니어도!
+★ runBlocking도 필요 없다!
 ```
 
-#### 현실적인 선택지 3가지
+#### 올바른 MVC + Coroutine 패턴
 
 ```kotlin
 // ═══════════════════════════════════════════════════════
-// 선택지 1: 그냥 CompletableFuture 쓰기 (코루틴 안 씀 — 가장 현실적)
+// ✅ 방법 1: Controller suspend + Service suspend (가장 깔끔 — 추천)
 // ═══════════════════════════════════════════════════════
 
 @RestController
 class OrderController(private val orderService: OrderService) {
 
     @GetMapping("/orders/{id}")
-    fun getOrder(@PathVariable id: Long): OrderDetail {
-        return orderService.getOrderDetail(id)  // 일반 fun
+    suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)
     }
 }
+
+@Service
+class OrderService(private val webClient: WebClient) {
+
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        val order = async { getOrder(id) }
+        val payment = async { getPayment(id) }
+        val delivery = async { getDelivery(id) }
+
+        OrderDetail(order.await(), payment.await(), delivery.await())
+    }
+
+    private suspend fun getPayment(id: Long): Payment {
+        // WebClient의 suspend 확장 함수 사용 (non-blocking I/O)
+        return webClient.get()
+            .uri("/payments/$id")
+            .retrieve()
+            .awaitBody()  // ← suspend 확장 함수 (kotlinx-coroutines-reactor)
+    }
+}
+
+// ★ runBlocking 없음
+// ★ Controller도 Service도 suspend
+// ★ WebClient + awaitBody()로 진짜 non-blocking I/O
+// ★ Spring MVC 5.3+에서 완벽 동작
+```
+
+```kotlin
+// ═══════════════════════════════════════════════════════
+// ✅ 방법 2: CompletableFuture (코루틴 안 쓸 때)
+// ═══════════════════════════════════════════════════════
 
 @Service
 class OrderService(
@@ -370,122 +404,76 @@ class OrderService(
             { orderRepo.findById(id) }, executor)
         val paymentF = CompletableFuture.supplyAsync(
             { paymentClient.getPayment(id) }, executor)
-        val deliveryF = CompletableFuture.supplyAsync(
-            { deliveryService.getStatus(id) }, executor)
 
-        CompletableFuture.allOf(orderF, paymentF, deliveryF).join()
+        CompletableFuture.allOf(orderF, paymentF).join()
 
-        return OrderDetail(orderF.join(), paymentF.join(), deliveryF.join())
+        return OrderDetail(orderF.join(), paymentF.join())
     }
 }
 
-// ★ 코루틴 없음, suspend 없음, runBlocking 없음
-// ★ MVC 세계에서 가장 자연스러운 병렬 처리
-// ★ Executor(ThreadPoolTaskExecutor)만 Bean으로 등록하면 됨
+// ★ 코루틴 없이도 병렬 처리 가능
+// ★ JDBC 등 블로킹 I/O만 쓰는 프로젝트에서는 이게 더 현실적
 ```
 
+#### 그러면 "runBlocking + async + WebClient" 패턴은 뭔가?
+
 ```kotlin
-// ═══════════════════════════════════════════════════════
-// 선택지 2: 코루틴을 Service 내부에 캡슐화 (코루틴 쓰되 밖에서 안 보이게)
-// ═══════════════════════════════════════════════════════
-
-@Service
-class OrderService {
-    // Service 전용 CoroutineScope
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    // 외부에는 일반 fun으로 노출
-    fun getOrderDetail(id: Long): OrderDetail {
-        // 내부에서만 코루틴 사용, 결과를 블로킹으로 꺼냄
-        return runBlocking(Dispatchers.IO) {
-            val order = async { orderRepo.findById(id) }
-            val payment = async { paymentClient.getPayment(id) }
-            OrderDetail(order.await(), payment.await())
-        }
-    }
-}
-
-// Controller는 아무것도 모름
+// 이런 패턴이 실무에서 돌아다니긴 한다:
 @GetMapping("/orders/{id}")
 fun getOrder(@PathVariable id: Long): OrderDetail {
-    return orderService.getOrderDetail(id)  // 그냥 일반 호출
-}
-
-// ⚠️ 결국 runBlocking을 쓰긴 함
-// ⚠️ 하지만 Service 내부에 숨겨서 "다리"를 한 곳으로 제한
-// ⚠️ 이럴 거면 선택지 1이 더 솔직한 코드
-```
-
-```kotlin
-// ═══════════════════════════════════════════════════════
-// 선택지 3: Spring MVC의 비동기 반환 타입 활용
-// ═══════════════════════════════════════════════════════
-
-@RestController
-class OrderController(private val orderService: OrderService) {
-
-    // Callable<T>를 반환하면 Spring MVC가 별도 스레드에서 실행
-    // → Tomcat 스레드를 즉시 반환!
-    @GetMapping("/orders/{id}")
-    fun getOrder(@PathVariable id: Long): Callable<OrderDetail> {
-        return Callable { orderService.getOrderDetail(id) }
+    return runBlocking {
+        val order = async { webClient.get().uri("/orders/$id").retrieve().awaitBody<Order>() }
+        val payment = async { webClient.get().uri("/payments/$id").retrieve().awaitBody<Payment>() }
+        OrderDetail(order.await(), payment.await())
     }
 }
 
-// 또는 DeferredResult 사용
-@GetMapping("/orders/{id}")
-fun getOrder(@PathVariable id: Long): DeferredResult<OrderDetail> {
-    val result = DeferredResult<OrderDetail>(5000L)  // 5초 타임아웃
-
-    CompletableFuture.supplyAsync({ orderService.getOrderDetail(id) })
-        .thenAccept { result.setResult(it) }
-        .exceptionally { ex ->
-            result.setErrorResult(ex)
-            null
-        }
-
-    return result  // Tomcat 스레드 즉시 반환!
-}
-
-// ★ Callable/DeferredResult → MVC에서도 Tomcat 스레드를 빨리 반환 가능
-// ★ 하지만 별도 스레드가 필요한 건 동일 (Thread-per-Request의 한계)
+// 이건 "동작은 하지만 비효율적인" 패턴이다:
+//
+// ① runBlocking이 Tomcat 스레드를 블로킹함
+// ② 그 안에서 async로 WebClient(non-blocking I/O) 병렬 실행
+// ③ 병렬 실행의 이점은 있음 (총 시간 = max(A, B))
+// ④ 하지만 Tomcat 스레드는 잡혀 있음
+//
+// ★ 안티패턴이 아니라 "차선책"
+// ★ Spring 5.3 이전에는 이게 유일한 방법이었음
+// ★ 5.3 이후에는 Controller를 suspend fun으로 바꾸면 runBlocking 불필요
 ```
 
 ```
-세 선택지 비교:
+정리: MVC + 코루틴의 시대별 변화
 
-┌──────────────────┬────────────────┬───────────────┬──────────────┐
-│                  │ CompletableFuture │ 코루틴 캡슐화 │ Callable     │
-│                  │ (선택지 1) ★추천  │ (선택지 2)     │ (선택지 3)    │
-├──────────────────┼────────────────┼───────────────┼──────────────┤
-│ 코루틴 사용       │ ❌ 안 씀       │ ✅ 내부만      │ ❌ 안 씀     │
-│ Controller       │ 일반 fun       │ 일반 fun      │ Callable 반환│
-│ Service          │ 일반 fun       │ 일반 fun      │ 일반 fun     │
-│ 가독성           │ ★★★           │ ★★            │ ★★           │
-│ Tomcat 스레드     │ 블로킹         │ 블로킹        │ 즉시 반환     │
-│ 별도 스레드 필요  │ ✅ Executor    │ ✅ Dispatchers│ ✅ TaskExecutor│
-│ 솔직함           │ ★★★           │ ★★            │ ★★★         │
-└──────────────────┴────────────────┴───────────────┴──────────────┘
+Spring 5.3 이전:
+  MVC Controller = 일반 fun만 가능
+  → 코루틴 쓰려면 runBlocking 필수 (차선책)
+  → "MVC에서 코루틴은 어색하다"가 맞는 말이었음
 
-★ Spring MVC + Kotlin 환경에서 가장 현실적인 답: CompletableFuture
+Spring 5.3 이후 (Spring Boot 2.4+):
+  MVC Controller = suspend fun 네이티브 지원!
+  → runBlocking 불필요
+  → Controller suspend → Service suspend → 자연스러운 코루틴 체인
+  → Tomcat 스레드 블로킹 없음 (내부적으로 Mono 변환)
+
+★ "MVC에서 코루틴이 안 된다"는 옛날 이야기
+★ 현재는 MVC에서도 코루틴이 1급 시민(first-class citizen)
 ```
 
 ```
 면접에서 이렇게 답하면 좋다:
 
-"Spring MVC 환경이라면 코루틴보다 CompletableFuture를 선택하겠습니다.
+"Spring MVC 5.3부터 Controller에서 suspend fun을 네이티브 지원합니다.
+ 내부적으로 suspend를 Mono로 변환하고 Servlet 비동기 처리를 활용하여
+ Tomcat 스레드를 블로킹하지 않습니다.
 
- 이유는 MVC의 Thread-per-Request 모델에서 코루틴을 쓰려면
- 결국 runBlocking으로 브릿지해야 하는데,
- 이는 Tomcat 스레드를 블로킹하므로 코루틴의 이점이 사라집니다.
+ Kotlin 프로젝트라면 MVC에서도 코루틴을 자연스럽게 쓸 수 있습니다.
+ Controller를 suspend fun으로 선언하고,
+ Service에서 coroutineScope + async로 병렬 처리합니다.
+ runBlocking은 필요 없습니다.
 
- CompletableFuture.supplyAsync로 여러 서비스를 병렬 호출하고
- allOf().join()으로 결과를 모으는 것이
- MVC 환경에서 가장 자연스럽고 솔직한 코드입니다.
+ Java 프로젝트라면 CompletableFuture.supplyAsync로
+ 병렬 호출하는 것이 자연스럽습니다.
 
- 코루틴의 진짜 이점을 살리려면 WebFlux로의 전환이 필요하지만,
- 현재 MVC 기반이라면 기술 스택을 바꾸는 것보다
- CompletableFuture로 해결하는 것이 팀에 부담이 적습니다."
+ 핵심은 기술 스택(Kotlin/Java)에 맞는 도구를 선택하는 것입니다."
 ```
 
 ---
@@ -500,7 +488,7 @@ fun getOrder(@PathVariable id: Long): DeferredResult<OrderDetail> {
 #### 답변: Controller에서도 가능하다. 하지만 어디서 여느냐는 관심사 분리의 문제다.
 
 ```kotlin
-// ✅ Controller에서 suspend 함수 — Spring WebFlux에서는 자연스럽다
+// ✅ Controller에서 suspend 함수 — MVC 5.3+ / WebFlux 모두 자연스럽다
 @RestController
 class OrderController(private val orderService: OrderService) {
 
@@ -523,7 +511,7 @@ class OrderService {
 
 ```
 "Controller에서 suspend를 쓰는 것 자체는 문제가 없습니다.
- Spring WebFlux는 Controller의 suspend 함수를 네이티브로 지원합니다.
+ Spring MVC 5.3+ / WebFlux 모두 Controller의 suspend 함수를 네이티브로 지원합니다.
 
  하지만 '어디서 병렬화할지'는 Service의 책임입니다.
 
@@ -533,43 +521,40 @@ class OrderService {
  관심사 분리 측면에서 맞습니다."
 ```
 
-#### Spring MVC (WebFlux가 아닌 경우) 주의점
+#### Spring MVC 5.3+ 에서의 동작 (정정!)
+
+```
+★ 이전에 "MVC에서는 suspend를 지원하지 않아서 runBlocking이 필요하다"고 했는데
+★ 이건 Spring 5.3 이전의 이야기다!
+★ Spring MVC 5.3+ (Spring Boot 2.4+)부터 suspend fun을 네이티브 지원한다.
+```
 
 ```kotlin
-// ⚠️ Spring MVC에서는 Controller가 suspend를 직접 지원하지 않음
-// → runBlocking으로 감싸야 하는데, 이러면 Tomcat 스레드를 블로킹함
-
-// ❌ Spring MVC + runBlocking (비추)
+// ✅ Spring MVC 5.3+ — Controller suspend fun 네이티브 지원!
 @RestController
-class OrderController {
+class OrderController(private val orderService: OrderService) {
+
     @GetMapping("/orders/{id}")
-    fun getOrder(@PathVariable id: Long): OrderDetail {
-        return runBlocking {  // Tomcat 스레드가 여기서 블로킹됨!
-            orderService.getOrderDetail(id)
-        }
+    suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)
+        // Spring MVC가 suspend → Mono로 변환 → 비동기 요청 처리
+        // runBlocking 불필요!
     }
 }
-// → Tomcat 스레드를 점유하면서 코루틴의 장점을 못 살림
 
-// ✅ Spring MVC에서는 CompletableFuture가 더 자연스러움
-@GetMapping("/orders/{id}")
-fun getOrder(@PathVariable id: Long): CompletableFuture<OrderDetail> {
-    return CoroutineScope(Dispatchers.IO).async {
-        orderService.getOrderDetail(id)
-    }.asCompletableFuture()
-}
+// ★ MVC도 WebFlux도 Controller에서 suspend fun을 쓸 수 있다
+// ★ 차이점은 "스레드 모델"에 있다 (아래 Q1에서 상세 설명)
 ```
 
 ```
-"Spring MVC를 쓰고 있다면 코루틴보다 CompletableFuture가
- 더 자연스러운 선택입니다.
+"Spring MVC 5.3부터 Controller에서 suspend fun을 네이티브 지원합니다.
+ 내부적으로 suspend 함수를 Mono로 변환하여 비동기 요청 처리를 합니다.
 
- Spring WebFlux를 쓰고 있다면 코루틴이 자연스럽고,
- Controller에서 suspend를 바로 쓸 수 있습니다.
+ 다만 MVC와 WebFlux의 차이는 여전히 존재합니다:
+ - MVC: suspend 중에도 Servlet 비동기 처리 (AsyncContext) 활용
+ - WebFlux: Netty Event Loop 기반 완전한 논블로킹
 
- 핵심은: 코루틴을 쓸 거면 WebFlux와 함께 써야 진짜 이점이 있고,
- Spring MVC에서 runBlocking으로 감싸면 Tomcat 스레드를
- 블로킹하는 거라 코루틴의 장점이 없습니다."
+ 두 경우 모두 Tomcat/Netty 스레드를 블로킹하지 않습니다."
 ```
 
 ---
@@ -748,12 +733,33 @@ suspend fun example() = coroutineScope {
 
 #### Q: "그럼 Spring MVC 환경이면 어떻게 하시겠어요?"
 
-```
-"Spring MVC 환경이면 코루틴 대신 CompletableFuture를 쓰겠습니다."
+**Kotlin이면 코루틴, Java이면 CompletableFuture.**
+
+```kotlin
+// ✅ Spring MVC 5.3+ (Kotlin) — suspend fun으로 코루틴 사용 가능!
+@RestController
+class OrderController(private val orderService: OrderService) {
+
+    @GetMapping("/orders/{id}")
+    suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)
+        // Tomcat 스레드 블로킹 없음, runBlocking 불필요
+    }
+}
+
+@Service
+class OrderService {
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        val order = async(Dispatchers.IO) { orderRepo.findById(id) }
+        val payment = async(Dispatchers.IO) { paymentClient.getPayment(id) }
+        val delivery = async(Dispatchers.IO) { deliveryService.getStatus(id) }
+        OrderDetail(order.await(), payment.await(), delivery.await())
+    }
+}
 ```
 
 ```java
-// Spring MVC + CompletableFuture (Java)
+// ✅ Spring MVC (Java) — CompletableFuture
 @Service
 public class OrderService {
 
@@ -780,7 +786,9 @@ public class OrderService {
 ```
 "핵심은 코루틴이냐 CompletableFuture냐가 아니라,
  독립적인 작업을 병렬로 실행해서 총 소요 시간을 줄이는 것입니다.
- 기술 스택에 맞는 도구를 선택하면 됩니다."
+
+ Spring MVC 5.3+에서는 Kotlin이면 코루틴, Java이면 CompletableFuture.
+ 둘 다 MVC에서 잘 동작합니다."
 ```
 
 ---
@@ -803,8 +811,8 @@ public class OrderService {
 
 5. Controller vs Service (1분)
    "병렬화 결정은 Service의 책임.
-    WebFlux면 Controller도 suspend 가능.
-    Spring MVC면 CompletableFuture가 자연스러움."
+    MVC 5.3+ / WebFlux 모두 Controller suspend 가능.
+    Kotlin이면 코루틴, Java이면 CompletableFuture."
 
 6. 트레이드오프 (30초)
    "병렬화는 최대값으로 줄이는 것.
@@ -815,10 +823,10 @@ public class OrderService {
 
 ### Q1. "MVC에서 코루틴 써도 결국 Tomcat 스레드는 잡히는 거 아닌가요?"
 
-**맞다. 정확한 지적이다.** 이것이 Spring MVC + Coroutine의 핵심 한계.
+**Spring 5.3 이전에는 맞았지만, 5.3 이후에는 아니다!**
 
 ```
-[Spring MVC에서 코루틴을 쓸 때 실제로 일어나는 일]
+[Spring MVC 5.3 이전 — runBlocking 시절]
 
 Tomcat Thread-1:
 ├── 요청 수신
@@ -827,107 +835,138 @@ Tomcat Thread-1:
 │     coroutineScope {
 │       async(IO) { getOrder() }     → IO 스레드풀에서 실행
 │       async(IO) { getPayment() }   → IO 스레드풀에서 실행
-│       async(IO) { getDelivery() }  → IO 스레드풀에서 실행
-│
-│       ↓ 세 작업이 IO 스레드에서 병렬로 실행되는 동안
-│       ↓ Tomcat Thread-1은 여기서 대기 중... (아무것도 안 함)
-│
-│       await(), await(), await()    → 결과 수집
 │     }
 │   }                                ← 여기서 풀림
 ├── 응답 반환
 └── Tomcat Thread-1 반납
 
-★ 코루틴 덕분에 3개 작업은 병렬로 실행됨 → 총 시간 단축 ✅
-★ 하지만 Tomcat 스레드는 전체 시간 동안 잡혀 있음 ❌
+★ runBlocking 때문에 Tomcat 스레드가 잡혀 있었음 ❌
 ```
 
 ```
-그러면 코루틴의 이점이 뭔가?
+[Spring MVC 5.3+ — suspend fun 네이티브 지원]
 
-[코루틴 없이 순차 실행]
-Tomcat Thread-1: ────Order(50ms)────Payment(2000ms)────Delivery(100ms)────
-                                                              총 2150ms 점유
+Tomcat Thread-1:
+├── 요청 수신
+├── Controller suspend fun 감지
+├── suspend → Mono 변환 (kotlinx-coroutines-reactor)
+├── AsyncContext 시작 → Tomcat 스레드 반환! ★
+└── (Tomcat Thread-1은 다른 요청 처리 가능)
 
-[코루틴으로 병렬 실행]
-Tomcat Thread-1: ────runBlocking(2000ms)────
-IO Thread-1:     ────Order(50ms)──
-IO Thread-2:     ────Payment(2000ms)──────
-IO Thread-3:     ────Delivery(100ms)───
-                              총 2000ms 점유
+Coroutine (IO Dispatcher):
+├── coroutineScope {
+│     async { getOrder() }
+│     async { getPayment() }
+│   }
+└── 완료 → Mono 완료 신호
 
-★ Tomcat 스레드 점유 시간: 2150ms → 2000ms (줄긴 줌)
-★ 하지만 여전히 Tomcat 스레드 1개를 2초 동안 잡고 있음
-★ 동시 요청 200개 넘으면 → Tomcat 스레드 고갈 → 같은 문제
+Tomcat Thread-N:
+├── Mono 완료 신호 수신
+├── 응답 전송
+└── 스레드 반환
+
+★ Tomcat 스레드가 블로킹되지 않는다!
+★ MVC의 Servlet 3.0 비동기 처리(AsyncContext) 활용
+★ runBlocking도 필요 없다!
+```
+
+**MVC vs WebFlux — 코루틴 사용 시 차이:**
+
+```
+                        MVC 5.3+ (suspend)   WebFlux (suspend)
+Tomcat 스레드 블로킹       ❌ 안 함            ❌ 안 함
+내부 메커니즘             AsyncContext         Netty Event Loop
+suspend → 변환           Mono (reactor)       Mono (reactor)
+스레드 모델              Thread Pool          Event Loop
+I/O 방식                블로킹 I/O도 가능      반드시 non-blocking I/O
+코루틴 효과              ✅ 병렬화 + 스레드 반환  ✅ 병렬화 + 완전 논블로킹
+
+★ 둘 다 Tomcat/Netty 스레드를 블로킹하지 않음
+★ 차이는 "I/O 모델" — MVC는 블로킹 I/O도 허용, WebFlux는 논블로킹만
+```
+
+**⚠️ 주의: MVC에서 블로킹 I/O를 쓰면?**
+
+```kotlin
+// MVC 5.3+ suspend Controller에서 블로킹 I/O를 쓰는 경우:
+@GetMapping("/orders/{id}")
+suspend fun getOrder(@PathVariable id: Long): OrderDetail = coroutineScope {
+    val order = async(Dispatchers.IO) {
+        jdbcTemplate.query(...)  // ← 블로킹 I/O (JDBC)
+    }
+    val payment = async(Dispatchers.IO) {
+        restTemplate.getForObject(...)  // ← 블로킹 I/O (RestTemplate)
+    }
+    OrderDetail(order.await(), payment.await())
+}
+
+// Tomcat 스레드는 반환됨 ✅
+// 하지만 Dispatchers.IO 스레드가 블로킹됨
+// → IO 스레드풀 크기(기본 64)가 한계
+// → 완전한 논블로킹을 원하면 WebClient + awaitBody() 사용
+
+// ★ 그래도 "Tomcat 스레드 고갈"은 방지됨 — 이것만으로도 큰 이점!
 ```
 
 **면접에서 이렇게 답하면 좋다:**
 
 ```
-"맞습니다. Spring MVC에서는 코루틴을 써도
- Tomcat 스레드가 응답 완료까지 점유됩니다.
+"Spring MVC 5.3부터 Controller에서 suspend fun을 네이티브 지원합니다.
+ 내부적으로 suspend를 Mono로 변환하고, Servlet 비동기 처리를 활용하여
+ Tomcat 스레드를 블로킹하지 않습니다.
 
- 코루틴의 이점은 '여러 I/O 작업을 병렬로 실행해서
- 총 대기 시간을 줄이는 것'이지,
- 'Tomcat 스레드를 해방하는 것'이 아닙니다.
+ 다만 JDBC 같은 블로킹 I/O를 쓰면 IO Dispatcher 스레드가 블로킹됩니다.
+ 이건 MVC의 한계가 아니라 JDBC의 한계입니다.
 
- Tomcat 스레드까지 해방하려면 두 가지 방법이 있습니다:
+ 완전한 논블로킹을 원하면:
+ ① WebClient + awaitBody()로 non-blocking I/O 사용
+ ② R2DBC로 논블로킹 DB 드라이버 사용
+ ③ 또는 WebFlux로 전환
 
- ① Spring WebFlux로 전환
-    → Controller가 suspend를 직접 지원
-    → Tomcat 스레드 대신 Event Loop 사용
-    → 스레드 블로킹 없음
-
- ② Spring MVC + DeferredResult/Callable
-    → 요청 처리를 별도 스레드로 넘기고 Tomcat 스레드 즉시 반환
-    → 하지만 별도 스레드가 필요하므로 근본 해결은 아님
-
- 결국 '스레드를 점유하지 않는 진짜 비동기'를 원하면
- WebFlux가 답이고, MVC에서 코루틴은
- '병렬화를 통한 응답 시간 단축'에 의미가 있습니다."
+ 핵심은: MVC 5.3+에서 suspend fun만으로도
+ Tomcat 스레드 고갈 문제는 해결됩니다."
 ```
 
-```
-[정리: MVC에서 코루틴의 가치]
-
-                        순차 실행    코루틴 병렬    WebFlux+코루틴
-Tomcat 스레드 점유 시간   2150ms      2000ms        0ms (논블로킹)
-응답 시간                2150ms      2000ms        2000ms
-스레드 효율              ❌ 낭비      ❌ 여전히 점유  ✅ 스레드 해방
-
-★ MVC + 코루틴 = "응답 시간 단축"에는 의미 있음
-★ MVC + 코루틴 ≠ "스레드 효율 개선"
-★ 스레드 효율까지 원하면 = WebFlux
-```
-
-#### 그러면 MVC에서 CompletableFuture도 같은 문제 아닌가?
+#### 그러면 MVC에서 CompletableFuture도 같은 효과인가?
 
 ```java
-// 맞다. CompletableFuture도 .join()하는 순간 Tomcat 스레드 블로킹.
-var result = CompletableFuture.allOf(f1, f2, f3).join();  // 여기서 블로킹
+// CompletableFuture도 MVC의 비동기 반환 타입으로 지원됨
+@GetMapping("/orders/{id}")
+public CompletableFuture<OrderDetail> getOrder(@PathVariable Long id) {
+    var orderF = CompletableFuture.supplyAsync(() -> orderRepo.findById(id), executor);
+    var paymentF = CompletableFuture.supplyAsync(() -> paymentClient.getPayment(id), executor);
 
-// MVC의 Thread-per-Request 모델에서는 피할 수 없는 한계.
-// 이건 코루틴의 문제가 아니라 "MVC 모델 자체의 특성".
+    return CompletableFuture.allOf(orderF, paymentF)
+        .thenApply(v -> new OrderDetail(orderF.join(), paymentF.join()));
+    // ★ CompletableFuture를 반환하면 MVC가 비동기로 처리
+    // ★ Tomcat 스레드를 블로킹하지 않음 (DeferredResult와 동일 메커니즘)
+    // ★ 단, .join()으로 결과를 동기적으로 꺼내면 해당 스레드 블로킹!
+}
 ```
 
 ---
 
 ### Q1-1. "코루틴을 쓴다 = WebFlux를 써야 한다"인가?
 
-**아니다.** 하지만 **WebFlux와 쓸 때 가장 효과적**이다.
+**아니다.** Spring MVC 5.3+에서도 코루틴을 잘 쓸 수 있다.
 
 ```
-Spring MVC + Coroutine:
-  → 가능하지만 runBlocking이 필요한 경우 있음
-  → Tomcat 스레드 블로킹 → 코루틴 장점 반감
-  → CompletableFuture가 더 자연스러움
+Spring MVC 5.3+ + Coroutine:
+  → Controller suspend fun 네이티브 지원
+  → runBlocking 불필요
+  → Tomcat 스레드 블로킹 없음 (AsyncContext)
+  → JDBC 같은 블로킹 I/O도 Dispatchers.IO로 처리 가능
+  → ★ 대부분의 프로젝트에서 충분!
 
 Spring WebFlux + Coroutine:
-  → suspend 함수를 네이티브 지원
-  → 스레드 블로킹 없음
-  → 코루틴의 장점을 100% 활용
+  → 동일하게 suspend 함수 지원
+  → Netty Event Loop 기반 완전 논블로킹
+  → 블로킹 I/O 사용 불가 (R2DBC, WebClient 필수)
+  → 처리량이 극도로 높아야 할 때 선택
 
-결론: MVC면 CompletableFuture, WebFlux면 Coroutine
+결론:
+  MVC 5.3+ = 코루틴 충분히 활용 가능 (대부분의 프로젝트)
+  WebFlux = 극한의 논블로킹이 필요할 때 (높은 동시 접속)
 ```
 
 ### Q2. 면접에서 "왜 코루틴을 선택했나요?"라고 물어보면?
@@ -977,8 +1016,186 @@ CompletableFuture를 선택하겠습니다.
 여러 선택지를 제시하고 상황에 맞는 것을 고르는 모습을 보여주는 것이 좋다.
 ```
 
+---
+
+### 부록: Kotlin + Spring MVC vs Kotlin + Spring WebFlux — 코루틴 사용 비교
+
+두 환경에서 코루틴 사용법이 공존하면서 헷갈리기 쉽다. 명확히 분리해서 정리한다.
+
+#### 공통점 (MVC 5.3+ / WebFlux 동일)
+
+```kotlin
+// ✅ Controller suspend fun — 둘 다 동일하게 작성
+@RestController
+class OrderController(private val orderService: OrderService) {
+
+    @GetMapping("/orders/{id}")
+    suspend fun getOrder(@PathVariable id: Long): OrderDetail {
+        return orderService.getOrderDetail(id)
+    }
+}
+
+// ✅ Service suspend fun — 둘 다 동일하게 작성
+@Service
+class OrderService {
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        val order = async { getOrder(id) }
+        val payment = async { getPayment(id) }
+        OrderDetail(order.await(), payment.await())
+    }
+}
+
+// ✅ coroutineScope / supervisorScope — 둘 다 동일
+// ✅ runBlocking 불필요 — 둘 다 동일
+// ✅ 의존성 — 둘 다 kotlinx-coroutines-core + kotlinx-coroutines-reactor
+```
+
+```
+공통점 정리:
+  - Controller / Service 코드가 완전히 동일
+  - suspend, coroutineScope, async/await 모두 동일하게 사용
+  - runBlocking 불필요
+  - 의존성 동일
+  → 코루틴 코드만 보면 MVC인지 WebFlux인지 구분 불가!
+```
+
+#### 차이점 1: 내부 동작 메커니즘
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              Kotlin + Spring MVC 5.3+                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  [요청] → Tomcat Thread Pool → Controller suspend fun 감지      │
+│           ↓                                                     │
+│  suspend → Mono 변환 (coroutines-reactor)                       │
+│           ↓                                                     │
+│  Servlet AsyncContext 시작 → Tomcat 스레드 반환                  │
+│           ↓                                                     │
+│  코루틴이 Dispatchers.IO 등에서 실행                              │
+│           ↓                                                     │
+│  완료 → Mono 완료 → Tomcat 스레드에서 응답 전송                   │
+│                                                                 │
+│  ★ 스레드 모델: Thread Pool (Tomcat, 기본 200개)                 │
+│  ★ 서블릿 기반: Servlet API 3.0+ 비동기 처리                     │
+│  ★ 블로킹 I/O 허용: JDBC, RestTemplate 등 사용 가능              │
+│    (단, Dispatchers.IO에서 실행해야 함)                           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│              Kotlin + Spring WebFlux                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  [요청] → Netty Event Loop → Controller suspend fun 감지        │
+│           ↓                                                     │
+│  suspend → Mono 변환 (coroutines-reactor)                       │
+│           ↓                                                     │
+│  Event Loop에서 논블로킹으로 처리                                 │
+│           ↓                                                     │
+│  완료 → Mono 완료 → Event Loop에서 응답 전송                     │
+│                                                                 │
+│  ★ 스레드 모델: Event Loop (Netty, CPU 코어 수만큼)              │
+│  ★ Reactive 기반: Reactor / Mono / Flux                         │
+│  ★ 블로킹 I/O 금지!: JDBC, RestTemplate 사용 불가                │
+│    (R2DBC, WebClient만 사용)                                     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### 차이점 2: I/O 클라이언트 선택
+
+```
+┌───────────────┬─────────────────────┬─────────────────────────┐
+│               │ Spring MVC 5.3+     │ Spring WebFlux          │
+├───────────────┼─────────────────────┼─────────────────────────┤
+│ HTTP 클라이언트│ ✅ RestTemplate      │ ❌ RestTemplate          │
+│               │ ✅ WebClient         │ ✅ WebClient             │
+│               │ ✅ Retrofit          │ ✅ Retrofit              │
+├───────────────┼─────────────────────┼─────────────────────────┤
+│ DB 드라이버    │ ✅ JDBC/JPA          │ ❌ JDBC/JPA              │
+│               │ ✅ R2DBC            │ ✅ R2DBC                 │
+│               │ ✅ MyBatis          │ ❌ MyBatis               │
+├───────────────┼─────────────────────┼─────────────────────────┤
+│ 블로킹 I/O    │ ✅ 허용              │ ❌ 금지 (Event Loop 블로킹)│
+│               │ (Dispatchers.IO에서) │                         │
+├───────────────┼─────────────────────┼─────────────────────────┤
+│ 논블로킹 극대화│ △ 가능하지만 선택적   │ ✅ 강제 (모든 I/O가 논블로킹)│
+└───────────────┴─────────────────────┴─────────────────────────┘
+```
+
+#### 차이점 3: 프로젝트 선택 기준
+
+```
+★ Spring MVC 5.3+ + Coroutine을 선택해야 할 때:
+  - 기존 MVC 프로젝트에 코루틴을 도입하고 싶을 때
+  - JDBC / JPA / MyBatis 등 블로킹 DB 드라이버를 쓸 때
+  - 팀이 서블릿 기반에 익숙할 때
+  - 점진적 마이그레이션이 필요할 때
+  → 대부분의 기존 프로젝트에 해당
+
+★ Spring WebFlux + Coroutine을 선택해야 할 때:
+  - 신규 프로젝트에서 처음부터 논블로킹으로 설계할 때
+  - 높은 동시 접속 처리가 필요할 때 (채팅, 스트리밍, IoT)
+  - R2DBC / WebClient / Redis Reactive 등 논블로킹 스택으로 통일 가능할 때
+  - 팀이 Reactive 프로그래밍에 익숙할 때
+```
+
+#### 차이점 4: 코루틴에서 블로킹 I/O 처리 방식
+
+```kotlin
+// ═══════════════════════════════════════
+// Spring MVC 5.3+ — 블로킹 I/O도 자연스럽게 처리
+// ═══════════════════════════════════════
+@Service
+class OrderService(
+    private val orderRepo: OrderRepository,     // JPA (블로킹)
+    private val webClient: WebClient            // 논블로킹
+) {
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        // 블로킹 I/O → Dispatchers.IO에서 실행
+        val order = async(Dispatchers.IO) {
+            orderRepo.findById(id).orElseThrow()  // JDBC — 블로킹
+        }
+        // 논블로킹 I/O → 기본 Dispatcher에서 실행 가능
+        val payment = async {
+            webClient.get().uri("/payments/$id")
+                .retrieve().awaitBody<Payment>()  // 논블로킹
+        }
+        OrderDetail(order.await(), payment.await())
+    }
+}
+
+// ═══════════════════════════════════════
+// Spring WebFlux — 모든 I/O가 논블로킹이어야 함
+// ═══════════════════════════════════════
+@Service
+class OrderService(
+    private val orderRepo: R2dbcOrderRepository,  // R2DBC (논블로킹)
+    private val webClient: WebClient               // 논블로킹
+) {
+    suspend fun getOrderDetail(id: Long): OrderDetail = coroutineScope {
+        val order = async {
+            orderRepo.findById(id)  // R2DBC — 논블로킹 (suspend 확장)
+        }
+        val payment = async {
+            webClient.get().uri("/payments/$id")
+                .retrieve().awaitBody<Payment>()  // 논블로킹
+        }
+        OrderDetail(order.await(), payment.await())
+    }
+}
+```
+
+```
+한 줄 정리:
+  - 코루틴 코드 자체는 MVC / WebFlux 동일
+  - 차이는 "어떤 I/O 클라이언트를 쓰느냐"와 "내부 스레드 모델"
+  - MVC: 블로킹 I/O 허용 (Dispatchers.IO 활용), 점진적 도입 가능
+  - WebFlux: 논블로킹 I/O 강제, 처음부터 설계 필요
+```
+
 ## 참고 자료
 
 - [Kotlin Coroutines — Structured Concurrency](https://kotlinlang.org/docs/coroutines-basics.html#structured-concurrency)
 - [Spring WebFlux — Kotlin Coroutines Support](https://docs.spring.io/spring-framework/reference/languages/kotlin/coroutines.html)
 - [Spring MVC vs WebFlux 선택 기준](https://docs.spring.io/spring-framework/reference/web/webflux/new-framework.html)
+- [Spring Framework 5.3 Release Notes — Coroutines](https://github.com/spring-projects/spring-framework/wiki/What%27s-New-in-Spring-Framework-5.x#spring-web-mvc)

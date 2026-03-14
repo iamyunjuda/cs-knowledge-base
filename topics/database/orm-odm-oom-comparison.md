@@ -44,7 +44,7 @@
 |---|---|---|---|
 | **풀네임** | Object-Relational Mapping | Object-Document Mapping | Object-Object Mapping |
 | **매핑 대상** | 관계형 DB 테이블 | Document DB (JSON/BSON) | 객체 ↔ 객체 |
-| **대표 기술** | JPA/Hibernate, MyBatis | Mongoose (Node.js), Spring Data MongoDB | MapStruct, ModelMapper |
+| **대표 기술** | JPA/Hibernate | Mongoose (Node.js), Spring Data MongoDB | MapStruct, ModelMapper |
 | **핵심 문제** | 객체 ↔ 테이블 간 패러다임 불일치 | 객체 ↔ 문서 구조 변환 | DTO ↔ Entity 변환 |
 
 ---

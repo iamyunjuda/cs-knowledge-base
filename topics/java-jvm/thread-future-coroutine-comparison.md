@@ -225,15 +225,16 @@ Coroutine의 본질:
 
 ```kotlin
 // ✅ 동기 코드처럼 읽히지만 내부적으로 비동기
-suspend fun getOrderDetail(id: Long): OrderDetail {
-    // 이 두 작업을 병렬로 실행
-    val order = async { orderRepo.findById(id) }
-    val user = async { userRepo.findById(userId) }
-    val coupon = async { couponRepo.findById(userId) }
+suspend fun getOrderDetail(id: Long, userId: Long): OrderDetail =
+    coroutineScope {  // ★ async를 쓰려면 coroutineScope이 필요!
+        // 이 두 작업을 병렬로 실행
+        val order = async { orderRepo.findById(id) }
+        val user = async { userRepo.findById(userId) }
+        val coupon = async { couponRepo.findById(userId) }
 
-    // 모두 완료되면 합침
-    return OrderDetail(order.await(), user.await(), coupon.await())
-}
+        // 모두 완료되면 합침
+        OrderDetail(order.await(), user.await(), coupon.await())
+    }
 
 // CompletableFuture의 thenCombine과 같은 효과지만 훨씬 읽기 쉽다
 ```
@@ -264,13 +265,14 @@ suspend fun getOrderDetail(id: Long): OrderDetail {
 #### Thread
 
 ```java
-Order order;
-User user;
-Coupon coupon;
+// ★ 람다에서 로컬 변수에 할당 불가 → AtomicReference 사용
+AtomicReference<Order> order = new AtomicReference<>();
+AtomicReference<User> user = new AtomicReference<>();
+AtomicReference<Coupon> coupon = new AtomicReference<>();
 
-Thread t1 = new Thread(() -> order = orderRepo.findById(id));
-Thread t2 = new Thread(() -> user = userRepo.findById(userId));
-Thread t3 = new Thread(() -> coupon = couponRepo.findById(userId));
+Thread t1 = new Thread(() -> order.set(orderRepo.findById(id)));
+Thread t2 = new Thread(() -> user.set(userRepo.findById(userId)));
+Thread t3 = new Thread(() -> coupon.set(couponRepo.findById(userId)));
 
 t1.start(); t2.start(); t3.start();
 t1.join(); t2.join(); t3.join();  // 모두 끝날 때까지 대기
