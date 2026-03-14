@@ -43,6 +43,8 @@
 
 - [Cache Stampede 해결기 — 주기적 DB 부하 급증의 원인을 찾아서](topics/database/cache-stampede-solving.md)
   - Thundering Herd, TTL 지터, 분산 락, 사전 워밍, Cache Stampede 원인 분석과 해결 전략
+- [ORM vs ODM vs OOM — 객체 매핑 기술의 차이](topics/database/orm-odm-oom-comparison.md)
+  - ORM(객체↔RDB), ODM(객체↔Document DB), OOM(객체↔객체) 비교, JPA/Hibernate vs Mongoose vs MapStruct, MyBatis는 SQL Mapper, Spring Data 추상화
 - [MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략](topics/database/mongodb-replication-optimization.md)
   - mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null/missing 인덱스 처리(Partial/Sparse Index), Replica Set 복제 지연 원인 분석, Causal Consistency Session, Write-Through Cache, CQRS, Change Stream 실시간 전략
 
