@@ -90,6 +90,8 @@
   - Thread-per-Request vs Event Loop, Netty 구조, WebFlux(Reactor), Kotlin Coroutine suspend, Java Virtual Thread(Loom), 실무 선택 기준
 - [언어별 비동기 구현 방식 — 내부 동작 원리부터 프레임워크 주의점까지](topics/os/async-patterns-by-language.md)
   - JS/Node.js(Event Loop, libuv), Python(asyncio, GIL), Go(Goroutine, GMP), Java(CompletableFuture, Virtual Thread), Kotlin(Structured Concurrency), C#(async/await, SynchronizationContext), Rust(Future, tokio), 리액티브 프로그래밍(Reactive Streams, Backpressure, Mono/Flux, RxJS, Kotlin Flow), 프레임워크별 주의점
+- [면접에서 "비동기를 구현해보라"고 했을 때 — 접근법과 답변 전략](topics/os/async-implementation-interview.md)
+  - 비동기 본질(커피숍 비유), 3단계 답변 전략, Thread+Callback→Future 패턴 구현, 언어별 답변(Java/JS/Kotlin/Python), 후속 질문 대비(Event Loop, Non-blocking vs 비동기, 트레이드오프)
 - [운영체제 구조와 커널(Kernel) 심화](topics/os/kernel-and-os-structure.md)
   - 유저 모드 vs 커널 모드, CPU Ring 구조, 커널 구성 요소(프로세스/메모리/파일시스템/네트워크), Monolithic vs Microkernel, Linux 커널과 컨테이너 기술의 관계
 - [커널(Kernel)이 뭔데? — 쉽게 이해하는 운영체제의 심장](topics/os/kernel-easy-guide.md)
