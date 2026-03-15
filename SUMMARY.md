@@ -40,6 +40,8 @@
   - Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시
 - [Tor와 어니언 라우팅 — 익명 통신의 원리부터 블록체인 활용까지](topics/network/tor-onion-routing.md)
   - 어니언 라우팅(3중 암호화/복호화), Guard/Middle/Exit 노드 역할, Circuit Telescoping, Hidden Service(.onion), Tor vs VPN vs 프록시 비교, 비트코인 Tor 노드 운영, 트래픽 상관관계 공격, Dandelion++, Directory Authority
+- [Tor vs Nostr — 둘 다 탈중앙화인데 뭐가 다른 거야?](topics/network/tor-vs-nostr.md)
+  - Tor(익명 통신) vs Nostr(검열 저항 SNS) 근본 차이, Nostr 이벤트/릴레이 구조, 공개키 기반 계정, Tor+Nostr 조합, 비트코인 생태계 내 위치, 검열 저항 메커니즘
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](topics/network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
 
