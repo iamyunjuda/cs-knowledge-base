@@ -1,3 +1,11 @@
+---
+title: "Tor와 어니언 라우팅 — 익명 통신의 원리부터 블록체인 활용까지"
+parent: Network
+nav_order: 6
+tags: [Tor, Onion Routing, 익명성, Hidden Service, Guard Node, Exit Node, Circuit, 비트코인, Dandelion++, VPN]
+description: "Tor 어니언 라우팅(3중 암호화/복호화) 원리, Guard/Middle/Exit 노드 역할, Circuit Telescoping, Hidden Service(.onion), Tor vs VPN 비교, 비트코인 Tor 노드 운영, 트래픽 상관관계 공격과 방어를 정리합니다."
+---
+
 # Tor와 어니언 라우팅 — 익명 통신의 원리부터 블록체인 활용까지
 
 ## 핵심 정리

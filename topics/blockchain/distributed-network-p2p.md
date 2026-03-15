@@ -1,3 +1,11 @@
+---
+title: "블록체인 분산 네트워크 — 중앙 서버 없이 20만 노드가 연결되는 원리"
+parent: Blockchain / Web3
+nav_order: 11
+tags: [P2P, Gossip, Kademlia, DHT, DNS Seed, Eclipse Attack, NAT Traversal, Bitcoin, Ethereum, libp2p, devp2p, Dandelion++]
+description: "블록체인 P2P 네트워크의 노드 탐색(DNS Seed, Kademlia DHT), 데이터 전파(Gossip, Dandelion++), NAT 홀펀칭, Eclipse Attack 방어, 비트코인 vs 이더리움 네트워크 아키텍처 비교를 정리합니다."
+---
+
 # 블록체인 분산 네트워크 — 중앙 서버 없이 20만 노드가 연결되는 원리
 
 ## 핵심 정리
