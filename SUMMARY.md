@@ -38,6 +38,8 @@
   - VPN 프로토콜별 비교(PPTP~WireGuard), GFW의 L3/L4/L7 차단 메커니즘, DPI 심층 패킷 검사, 중국에서 되는 VPN vs 안 되는 VPN, Trojan/V2Ray 우회 원리
 - [프록시(Proxy)와 리버스 프록시(Reverse Proxy)](topics/network/proxy-reverse-proxy.md)
   - Forward Proxy vs Reverse Proxy 차이, SSL Termination, API Gateway와의 관계, CDN, K8s Ingress Controller, Nginx 설정 예시
+- [Tor와 어니언 라우팅 — 익명 통신의 원리부터 블록체인 활용까지](topics/network/tor-onion-routing.md)
+  - 어니언 라우팅(3중 암호화/복호화), Guard/Middle/Exit 노드 역할, Circuit Telescoping, Hidden Service(.onion), Tor vs VPN vs 프록시 비교, 비트코인 Tor 노드 운영, 트래픽 상관관계 공격, Dandelion++, Directory Authority
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](topics/network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
 
@@ -69,6 +71,8 @@
   - Tx 테이블(멱등성 키, 상태 전이 이력), 지갑/입금 주소 관리, 이벤트 인덱싱 스키마, 잔액 원장(이중 기장), Outbox 패턴, 비관적 잠금, Reconciliation, NUMERIC(78,0), 인덱스/파티셔닝 전략
 - [블록체인 모니터링 시스템 — 설계, 지표, 알림, 운영](topics/blockchain/blockchain-monitoring-system.md)
   - Tx 상태/Nonce/가스비/지갑 잔액/RPC/이벤트 리스너 모니터링 지표, Prometheus+Grafana 아키텍처, 알림 등급(P1~P3) 설계, 대시보드 레이아웃, 온체인 감시(Defender/Forta), 백오피스 연동, 인시던트 대응 플레이북
+- [블록체인 분산 네트워크 — 중앙 서버 없이 20만 노드가 연결되는 원리](topics/blockchain/distributed-network-p2p.md)
+  - 부트스트랩 노드(Seed Node), Kademlia DHT 노드 탐색, devp2p/RLPx 프로토콜 스택, 가십 프로토콜(Gossip) 블록/Tx 전파, 비트코인 DNS Seed/addr 메시지/Compact Block Relay(BIP 152)/Headers-First Sync/Eviction 정책/BIP 324 암호화, 이더리움 vs 비트코인 설계 철학 비교
 - [합의 메커니즘 심화 — PoW, PoS, Reorg, Block Finality](topics/blockchain/consensus-mechanisms.md)
   - PoW 채굴/난이도 조정/51% 공격, PoS Validator/Slashing/Epoch, PoW vs PoS 비교, Block Finality(확률적 vs 결정적), Reorg 심화(PoS Reorg, 감지 시스템), DPoS/PBFT/PoA/PoH, The Merge 전후 변화
 - [ERC 토큰 표준 심화 — ERC-20, 721, 1155, 4337, 백엔드 구현](topics/blockchain/erc-token-standards.md)
