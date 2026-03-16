@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-README.md의 목차를 index.md(GitHub Pages 홈)에 자동 동기화하는 스크립트.
+SUMMARY.md의 목차를 index.md(GitHub Pages 홈)에 자동 동기화하는 스크립트.
 
-README.md를 single source of truth로 사용하여 index.md를 생성합니다.
+SUMMARY.md를 single source of truth로 사용하여 index.md를 생성합니다.
 - 마크다운 리스트 → 테이블 형식으로 변환
 - .md 링크 → {{ site.baseurl }}/.html 링크로 변환
 - Jekyll front matter 자동 추가
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-README_PATH = REPO_ROOT / "README.md"
+SUMMARY_PATH = REPO_ROOT / "SUMMARY.md"
 INDEX_PATH = REPO_ROOT / "index.md"
 
 INDEX_HEADER = """\
@@ -54,7 +54,7 @@ def convert_md_link_to_jekyll(md_link: str) -> str:
 
 
 def parse_readme_toc(readme_text: str) -> str:
-    """README.md의 목차 섹션을 파싱하여 index.md용 테이블 형식으로 변환"""
+    """SUMMARY.md의 목차 섹션을 파싱하여 index.md용 테이블 형식으로 변환"""
     lines = readme_text.split('\n')
     output = []
     in_toc = False
@@ -62,8 +62,8 @@ def parse_readme_toc(readme_text: str) -> str:
     table_started = False
 
     for line in lines:
-        # 목차 시작 감지
-        if line.strip() == '## 목차':
+        # 목차 시작 감지 (SUMMARY.md는 '# 목차'로 시작)
+        if line.strip() in ('# 목차', '## 목차'):
             in_toc = True
             continue
 
@@ -128,12 +128,12 @@ def extract_keywords(description: str) -> str:
 
 
 def main():
-    if not README_PATH.exists():
-        print(f"ERROR: {README_PATH} not found", file=sys.stderr)
+    if not SUMMARY_PATH.exists():
+        print(f"ERROR: {SUMMARY_PATH} not found", file=sys.stderr)
         sys.exit(1)
 
-    readme_text = README_PATH.read_text(encoding='utf-8')
-    toc_content = parse_readme_toc(readme_text)
+    summary_text = SUMMARY_PATH.read_text(encoding='utf-8')
+    toc_content = parse_readme_toc(summary_text)
 
     index_content = INDEX_HEADER + toc_content + '\n' + INDEX_FOOTER
 
