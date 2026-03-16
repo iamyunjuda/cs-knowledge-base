@@ -87,6 +87,8 @@
   - Hardhat vs Foundry, 테스트 전략(유닛/Fuzz/Invariant/Fork), 보안 취약점(Reentrancy/Flash Loan/Access Control), CEI 패턴, Proxy 업그레이드(UUPS/Transparent), dApp 백엔드 아키텍처, The Graph, Meta-Transaction, Solidity Clean Code
 - [VASP 지갑 운영 — 거래소 지갑 아키텍처, Travel Rule, 규제 준수](topics/blockchain/vasp-wallet-operations.md)
   - VASP 정의/유형, 거래소 지갑 구조(Sweep/Omnibus), 입출금 처리 플로우, Travel Rule(FATF/특금법/CODE/VerifyVASP), AML/KYC 연동, 주소 귀속 확인, 거래소 백엔드 시스템 구성, 멀티체인 지원
+- [Nostr 프로토콜 — 검열 저항 탈중앙 소셜 프로토콜의 구조와 동작 원리](topics/blockchain/nostr-protocol.md)
+  - Nostr 개념(Notes and Other Stuff Transmitted by Relays), 클라이언트+릴레이 아키텍처, secp256k1 키페어 계정, 이벤트(Event) JSON 구조, NIP 제안 체계, 릴레이 WebSocket 통신 프로토콜, Zap(Lightning 결제), Tor와의 비교, 릴레이 구현 고려사항
 
 ### OS / 운영체제
 
