@@ -1,3 +1,9 @@
+---
+title: "SimpleAsyncTaskExecutor vs ThreadPoolTaskExecutor — Spring 비동기 실행기의 차이와 선택 기준"
+parent: Spring
+nav_order: 6
+---
+
 # SimpleAsyncTaskExecutor vs ThreadPoolTaskExecutor — Spring 비동기 실행기의 차이와 선택 기준
 
 ## 핵심 정리

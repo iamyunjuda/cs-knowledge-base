@@ -1,3 +1,9 @@
+---
+title: "Java Thread vs CompletableFuture vs Kotlin Coroutine — 근본적으로 다른 계층의 개념"
+parent: Java / JVM
+nav_order: 3
+---
+
 # Java Thread vs CompletableFuture vs Kotlin Coroutine — 셋은 근본적으로 다른 계층의 개념이다
 
 ## 핵심 정리

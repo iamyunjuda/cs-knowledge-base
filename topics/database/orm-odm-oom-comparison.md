@@ -1,3 +1,9 @@
+---
+title: "ORM vs ODM vs OOM — 객체 매핑 기술의 차이"
+parent: Database
+nav_order: 4
+---
+
 # ORM vs ODM vs OOM — 객체 매핑 기술의 차이
 
 ## 핵심 정리

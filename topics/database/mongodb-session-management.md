@@ -1,3 +1,9 @@
+---
+title: "MongoDB 세션 관리 심화 — RDB 커넥션과의 근본적 차이, Spring Data MongoDB 실전"
+parent: Database
+nav_order: 5
+---
+
 # MongoDB 세션 관리 심화 — RDB 커넥션과의 근본적 차이, Spring Data MongoDB 실전
 
 ## 핵심 정리

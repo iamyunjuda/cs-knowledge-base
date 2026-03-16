@@ -1,3 +1,9 @@
+---
+title: "Tomcat Thread Pool vs DB Connection Pool — 완전히 다른 두 풀의 역할과 관계"
+parent: Spring
+nav_order: 9
+---
+
 # Tomcat Thread Pool vs DB Connection Pool — 완전히 다른 두 풀의 역할과 관계
 
 ## 핵심 정리
