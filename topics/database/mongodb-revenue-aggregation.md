@@ -879,9 +879,355 @@ public void onOrderCompleted(OrderCompletedEvent event) {
 }
 ```
 
+## 배포 중 유입되는 주문의 통계 정합성
+
+배포(Deploy)는 순간이 아니다. Rolling Update든 Blue-Green이든, **구버전과 신버전이 공존하는 시간**이 존재한다. 이 시간 동안 들어오는 주문이 통계에서 빠지거나 중복 집계되는 문제가 발생할 수 있다.
+
+---
+
+### 배포 시 통계가 깨지는 시나리오
+
+```
+시간축 ──────────────────────────────────────────▶
+
+Pod A (v1)  ████████████████░░░░░░░░░  (종료)
+Pod B (v1)  ████████████████████░░░░░  (종료)
+Pod C (v2)  ░░░░░░░░████████████████████████████
+Pod D (v2)  ░░░░░░░░░░░░████████████████████████
+
+                    ▲ 이 구간이 위험
+                    │ v1, v2 공존 구간
+```
+
+| 시나리오 | 원인 | 결과 |
+|---------|------|------|
+| **통계 누락** | v1 Pod이 주문을 받고 증분 갱신 전에 SIGTERM으로 종료됨 | 매출 집계에서 해당 주문 빠짐 |
+| **이중 집계** | v1이 Kafka에 이벤트를 발행 → v1 Consumer 종료 → v2 Consumer가 리밸런싱 후 같은 파티션을 재소비 | 같은 주문이 두 번 집계 |
+| **스키마 불일치** | v2에서 `calculatedRevenue`에 `taxAmount` 필드를 추가 → v1은 이 필드 없이 저장 | v2 Aggregation에서 `taxAmount`가 null/0 |
+| **Materialized View 갱신 충돌** | v1의 스케줄러가 `$merge` 실행 중 v2의 스케줄러도 `$merge` 실행 | 덮어쓰기로 데이터 유실 |
+
+---
+
+### 전략 1: Graceful Shutdown — 진행 중 작업 완료 보장
+
+배포 시 가장 기본적인 방어선. Pod 종료 전 진행 중인 주문 처리와 통계 갱신을 완료한다.
+
+```java
+@Component
+@Slf4j
+public class GracefulShutdownHandler {
+
+    private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
+    private final AtomicInteger activeOrderProcessing = new AtomicInteger(0);
+
+    @EventListener(ContextClosedEvent.class)
+    public void onShutdown() {
+        shuttingDown.set(true);
+        log.info("Shutdown 시작. 진행 중인 주문 처리 대기: {}건",
+            activeOrderProcessing.get());
+
+        // 진행 중인 주문 처리가 완료될 때까지 대기 (최대 30초)
+        long deadline = System.currentTimeMillis() + 30_000;
+        while (activeOrderProcessing.get() > 0
+               && System.currentTimeMillis() < deadline) {
+            try { Thread.sleep(500); } catch (InterruptedException e) { break; }
+        }
+
+        if (activeOrderProcessing.get() > 0) {
+            log.warn("타임아웃! 미완료 주문 {}건은 Reconciliation에서 보정됨",
+                activeOrderProcessing.get());
+        }
+    }
+
+    public boolean isShuttingDown() {
+        return shuttingDown.get();
+    }
+
+    public void incrementActive() { activeOrderProcessing.incrementAndGet(); }
+    public void decrementActive() { activeOrderProcessing.decrementAndGet(); }
+}
+```
+
+```java
+@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+    private final GracefulShutdownHandler shutdownHandler;
+
+    public Order completeOrder(Order order) {
+        if (shutdownHandler.isShuttingDown()) {
+            // 종료 중이면 새 주문을 받지 않음 → 로드밸런서가 다른 Pod으로 라우팅
+            throw new ServiceUnavailableException("서버 종료 중");
+        }
+
+        shutdownHandler.incrementActive();
+        try {
+            order.setStatus("COMPLETED");
+            order.recalculateRevenue();
+            orderRepository.save(order);
+            publishRevenueEvent(order);  // 증분 갱신 이벤트
+            return order;
+        } finally {
+            shutdownHandler.decrementActive();
+        }
+    }
+}
+```
+
+**K8s 설정:**
+
+```yaml
+# Pod이 트래픽을 받지 않되, 진행 중 작업은 완료할 시간을 줌
+spec:
+  terminationGracePeriodSeconds: 60
+  containers:
+    - name: order-service
+      lifecycle:
+        preStop:
+          exec:
+            # LB에서 빠진 후 기존 요청 처리 시간 확보
+            command: ["sh", "-c", "sleep 10"]
+```
+
+---
+
+### 전략 2: 이벤트 기반 집계 — 배포와 통계를 완전히 분리
+
+주문 저장과 통계 갱신을 **비동기 이벤트로 분리**하면, 배포가 통계에 직접 영향을 주지 않는다.
+
+```
+┌──────────────┐         ┌───────────┐         ┌──────────────────┐
+│  주문 서비스   │───────▶│  Kafka    │───────▶│  통계 집계 서비스   │
+│  (배포 대상)  │  이벤트  │  (독립)   │  소비   │  (별도 배포 주기)  │
+└──────────────┘         └───────────┘         └──────────────────┘
+      v1→v2 배포 중                              영향 없음
+```
+
+**핵심 포인트:**
+- 주문 서비스가 재시작되더라도, Kafka에 이미 들어간 이벤트는 사라지지 않음
+- 통계 집계 서비스는 별도로 배포 → 주문 서비스 배포와 무관하게 안정적으로 소비
+- Consumer 리밸런싱이 발생해도 Kafka offset으로 정확히 이어서 처리
+
+```java
+// 주문 서비스: 주문 완료 시 이벤트만 발행하고 끝
+@Service
+public class OrderService {
+
+    @Transactional
+    public Order completeOrder(Order order) {
+        order.setStatus("COMPLETED");
+        order.recalculateRevenue();
+        Order saved = orderRepository.save(order);
+
+        // Outbox 패턴: 트랜잭션 안에서 이벤트 저장
+        outboxRepository.save(new OutboxEvent(
+            "ORDER_COMPLETED",
+            saved.getId(),
+            toJson(saved.getCalculatedRevenue())
+        ));
+
+        return saved;
+    }
+}
+
+// Outbox → Kafka 릴레이 (별도 스레드 또는 Debezium CDC)
+// 주문 서비스가 죽어도 outbox에 남아있으므로 이벤트 유실 없음
+```
+
+```java
+// 통계 집계 서비스: 독립 배포, Consumer Group으로 exactly-once 처리
+@Service
+public class RevenueConsumer {
+
+    @KafkaListener(
+        topics = "order-events",
+        groupId = "revenue-aggregator",
+        properties = {
+            "enable.auto.commit=false",        // 수동 커밋
+            "isolation.level=read_committed"    // 트랜잭션 메시지만 읽기
+        }
+    )
+    public void consume(OrderCompletedEvent event, Acknowledgment ack) {
+        // 멱등성 체크
+        if (isAlreadyProcessed(event.getEventId())) {
+            ack.acknowledge();
+            return;
+        }
+
+        updateRevenueSummary(event);
+        markAsProcessed(event.getEventId());
+        ack.acknowledge();  // 처리 완료 후에만 커밋
+    }
+}
+```
+
+---
+
+### 전략 3: 배포 전후 Reconciliation — "배포 구간" 자동 재검증
+
+배포 시각을 기록하고, 배포 구간에 해당하는 주문만 자동으로 재검증한다.
+
+```java
+@Component
+@Slf4j
+public class DeploymentAwareReconciliation {
+
+    private final MongoTemplate mongoTemplate;
+
+    /**
+     * 배포 완료 후 호출 (CI/CD 파이프라인에서 트리거)
+     * 또는 애플리케이션 시작 시 자동 실행
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void reconcileDeploymentWindow() {
+        // 1. 배포 구간 파악: 마지막 배포 시각 ~ 현재
+        DeploymentRecord lastDeploy = mongoTemplate.findOne(
+            Query.query(Criteria.where("status").is("COMPLETED"))
+                .with(Sort.by(Sort.Direction.DESC, "completedAt"))
+                .limit(1),
+            DeploymentRecord.class
+        );
+
+        if (lastDeploy == null) return;
+
+        Instant deployStart = lastDeploy.getStartedAt();
+        Instant deployEnd = lastDeploy.getCompletedAt();
+
+        log.info("배포 구간 재검증: {} ~ {}", deployStart, deployEnd);
+
+        // 2. 배포 구간에 생성된 주문만 검증
+        List<Order> ordersInWindow = mongoTemplate.find(
+            Query.query(Criteria.where("createdAt")
+                .gte(deployStart.minus(5, ChronoUnit.MINUTES))  // 여유 5분
+                .lte(deployEnd.plus(5, ChronoUnit.MINUTES))),
+            Order.class
+        );
+
+        int fixed = 0;
+        for (Order order : ordersInWindow) {
+            // 사전 계산 필드가 없거나 잘못된 경우 재계산
+            if (order.getCalculatedRevenue() == null
+                || !isRevenueCorrect(order)) {
+                order.recalculateRevenue();
+                mongoTemplate.save(order);
+                fixed++;
+            }
+        }
+
+        if (fixed > 0) {
+            log.warn("배포 구간 보정 완료: {}건 / {}건 중", fixed, ordersInWindow.size());
+            // 영향받는 월의 Materialized View도 재갱신
+            refreshAffectedMonths(ordersInWindow);
+        }
+    }
+
+    private boolean isRevenueCorrect(Order order) {
+        CalculatedRevenue existing = order.getCalculatedRevenue();
+        order.recalculateRevenue();
+        CalculatedRevenue recalculated = order.getCalculatedRevenue();
+        // 원본 복원 후 비교
+        order.setCalculatedRevenue(existing);
+        return existing.getNetRevenue()
+            .compareTo(recalculated.getNetRevenue()) == 0;
+    }
+}
+```
+
+---
+
+### 전략 4: 스키마 변경이 포함된 배포 — 하위 호환성 보장
+
+매출 계산 로직이 변경되는 배포가 가장 위험하다.
+
+```
+v1: netRevenue = grossRevenue - refundAmount
+v2: netRevenue = grossRevenue - refundAmount - platformFee  ← 새 필드 추가
+```
+
+**2단계 배포로 안전하게 처리:**
+
+```
+Phase 1 배포: platformFee 필드 추가, 하지만 집계에는 아직 반영 안 함
+  ↓
+마이그레이션: 기존 도큐먼트에 platformFee = 0 설정 + recalculateRevenue()
+  ↓
+Phase 2 배포: 집계 로직에 platformFee 반영
+```
+
+```java
+// Phase 1: 하위 호환 — platformFee가 없어도 동작
+public void recalculateRevenue() {
+    BigDecimal fee = Optional.ofNullable(this.platformFee)
+        .orElse(BigDecimal.ZERO);  // null-safe
+
+    this.calculatedRevenue = new CalculatedRevenue(
+        itemsTotal, discountTotal, gross,
+        gross.subtract(refundAmount).subtract(fee)
+    );
+}
+
+// 마이그레이션 스크립트
+db.orders.updateMany(
+  { platformFee: { $exists: false } },
+  { $set: { platformFee: NumberDecimal("0") } }
+);
+
+// Phase 2: 모든 도큐먼트에 platformFee가 존재함이 보장된 후
+// 집계 파이프라인에 platformFee 포함
+```
+
+---
+
+### 배포 전략별 통계 리스크 비교
+
+| 배포 방식 | 공존 시간 | 통계 리스크 | 대응 |
+|----------|----------|-----------|------|
+| **Rolling Update** | 길다 (수 분) | v1/v2가 동시에 주문 처리 → 스키마 불일치 가능 | 하위 호환 필수 + 배포 후 Reconciliation |
+| **Blue-Green** | 순간 전환 | 전환 순간 진행 중 요청 유실 가능 | Graceful Shutdown + Drain 대기 |
+| **Canary** | 매우 길다 | 소량 트래픽만 v2로 → 불일치 범위 작음 | 카나리 비율만큼의 오차 모니터링 |
+| **Recreate** | 다운타임 있음 | 다운타임 동안 주문 불가 → 통계 gap 없음 | 가장 안전하지만 서비스 중단 |
+
+### 실전 체크리스트
+
+```
+배포 전:
+  □ calculatedRevenue 계산 로직 변경이 있는가?
+    → 있으면 2단계 배포 (Phase 1 호환 → 마이그레이션 → Phase 2 반영)
+  □ 새 필드가 추가되는가?
+    → 기존 도큐먼트에 기본값 마이그레이션 선행
+  □ Materialized View 스케줄러가 v1/v2에서 동시 실행될 수 있는가?
+    → 분산 락(ShedLock) 적용
+
+배포 중:
+  □ Graceful Shutdown으로 진행 중 주문 처리 완료 대기
+  □ K8s preStop + terminationGracePeriodSeconds 설정 확인
+
+배포 후:
+  □ 배포 구간 주문 Reconciliation 자동 실행
+  □ revenue_summary와 원본 orders 간 오차 확인
+  □ Grafana 매출 대시보드에서 배포 시점 전후 급변 여부 확인
+```
+
+**ShedLock으로 Materialized View 중복 실행 방지:**
+
+```java
+// v1과 v2가 동시에 스케줄러를 실행해도 하나만 실행됨
+@Scheduled(cron = "0 */10 * * * *")
+@SchedulerLock(
+    name = "revenue_materialized_view_refresh",
+    lockAtLeastFor = "PT5M",
+    lockAtMostFor = "PT9M"
+)
+public void refreshMaterializedView() {
+    // $merge로 revenue_summary 갱신
+}
+```
+
 ## 참고 자료
 
 - [MongoDB Aggregation Pipeline 공식 문서](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/)
 - [MongoDB $merge (Materialized View)](https://www.mongodb.com/docs/manual/reference/operator/aggregation/merge/)
 - [MongoDB Change Streams](https://www.mongodb.com/docs/manual/changeStreams/)
 - [Spring Data MongoDB - Aggregation](https://docs.spring.io/spring-data/mongodb/reference/mongodb/aggregation-framework.html)
+- [ShedLock - Distributed Lock for Schedulers](https://github.com/lukas-krecan/ShedLock)
