@@ -53,6 +53,8 @@
   - ORM(객체↔RDB), ODM(객체↔Document DB), OOM(객체↔객체) 비교, JPA/Hibernate vs Mongoose vs MapStruct, MyBatis는 SQL Mapper, Spring Data 추상화
 - [MongoDB 심화 — mongos/mongod 아키텍처, Null 인덱스 처리, Replica 지연 해결 전략](topics/database/mongodb-replication-optimization.md)
   - mongod/mongos 역할 비교, Sharded Cluster 쿼리 흐름, null/missing 인덱스 처리(Partial/Sparse Index), Replica Set 복제 지연 원인 분석, Causal Consistency Session, Write-Through Cache, CQRS, Change Stream 실시간 전략
+- [MongoDB 복잡한 Order 구조에서 매출 총액 집계 설계](topics/database/mongodb-revenue-aggregation.md)
+  - Aggregation Pipeline, 사전 계산 필드(Pre-computed Field), Materialized View($merge), $unwind vs $reduce, 복합 인덱스/Covered Query, Spring Data MongoDB 구현, Change Stream 실시간 갱신, 대규모 데이터 전략(Sharding/CQRS/ClickHouse), 증분 갱신+Reconciliation, 매출 오차 검증·테스트·자동 보정, 멱등성 보장, 배포 중 통계 정합성(Graceful Shutdown/Outbox/배포 구간 재검증/스키마 하위 호환/ShedLock)
 - [MongoDB 세션 관리 심화 — RDB 커넥션과의 근본적 차이, Spring Data MongoDB 실전](topics/database/mongodb-session-management.md)
   - RDB 커넥션=세션(1:1) vs MongoDB lsid 기반 논리 세션(N:M), 커넥션 풀 동작 차이, 암시적/명시적 세션, MongoTemplate+ClientSession, @Transactional, Causal Consistency Session, Reactive 환경, 세션 누수 방지, Sharded 트랜잭션 주의점
 
