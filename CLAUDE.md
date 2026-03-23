@@ -21,6 +21,7 @@
 - `topics/data-structure/` - 자료구조, 알고리즘 등
 - `topics/infra/` - Kafka, Redis, Docker, 인프라 미들웨어 등
 - `topics/blockchain/` - Web3, 이더리움, 지갑, 스마트 컨트랙트, DeFi, 합의 메커니즘(PoW/PoS), 키 관리(KMS/HSM/MPC), 모니터링, DB 스키마, VASP/거래소, ERC 토큰 표준, 풀노드 운영, dApp 개발 등
+- `topics/frontend/` - React, 브라우저 렌더링, 번들링, 프론트엔드 기술 등
 - `topics/design-pattern/` - 디자인 패턴, 아키텍처 등
 - `topics/git/` - Git 명령어, 브랜치 전략, 병합 방식 등
 - `topics/map-system/` - 공간 인덱싱, 지도 타일링, POI, 글로벌 로컬라이징, 지도 데이터 파이프라인 등

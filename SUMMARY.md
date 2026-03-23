@@ -125,6 +125,13 @@
 - [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준](topics/git/merge-strategies.md)
   - Merge Commit / Rebase Merge / Squash Merge 비교, 커밋 보존 여부, 히스토리 형태 차이, Squash 후 브랜치 삭제 이유, 실무 전략 선택 기준
 
+### Frontend / 프론트엔드
+
+- [React 번들링 — Webpack, Vite, 그리고 모듈 시스템의 진화](topics/frontend/react-bundling.md)
+  - JS 모듈 시스템 진화(CJS/ESM), Webpack 핵심 개념(Entry/Loader/Plugin), Vite 동작 원리(ESM 기반 개발 서버, Rollup 프로덕션 빌드), Webpack vs Vite 비교, Code Splitting/Lazy Loading, Source Map, CRA→Vite 마이그레이션
+- [브라우저 동작 원리 — Chrome 기준, URL 입력부터 화면 렌더링까지](topics/frontend/browser-rendering.md)
+  - Chrome 멀티 프로세스 아키텍처, URL→DNS→TCP/TLS→HTTP 흐름, HTML 파싱→DOM/CSSOM→Render Tree→Layout→Paint→Composite, V8 엔진(Ignition/TurboFan JIT), 이벤트 루프와 렌더링 관계, React Virtual DOM과 브라우저 렌더링, DevTools 성능 분석
+
 ### Map System / 지도 시스템
 
 - [공간 인덱싱과 지도 시스템 기초 — POI, 타일링, Geocoding](topics/map-system/spatial-indexing-and-map-fundamentals.md)
