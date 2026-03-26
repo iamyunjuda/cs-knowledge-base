@@ -44,6 +44,8 @@
   - Tor(익명 통신) vs Nostr(검열 저항 SNS) 근본 차이, Nostr 이벤트/릴레이 구조, 공개키 기반 계정, Tor+Nostr 조합, 비트코인 생태계 내 위치, 검열 저항 메커니즘
 - [WebSocket 심화 — 동작 원리부터 K8s 인프라 이슈까지](topics/network/websocket-deep-dive.md)
   - WebSocket 연결/프레임 구조, 스레드 모델(Thread-per-Connection vs Event-Driven), K8s 운영 이슈(Sticky Session, Pod간 브로드캐스트, 스케일링, Graceful Shutdown)
+- [Cross-Region 라우팅 헤더 설계 — X-Region-Info 기반 지역 간 서버 통신](topics/network/cross-region-routing-header.md)
+  - X-Region-Info 헤더 설계, Gateway 라우팅 로직, Region Registry, 헤더 위조 방지(Strip+HMAC), mTLS 지역 간 인증, Replay Attack 방지, Data Residency, Hop Count 무한루프 방지, Rate Limiting, 장애 Fallback
 
 ### Database
 
