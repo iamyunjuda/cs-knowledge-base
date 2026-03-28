@@ -135,7 +135,7 @@
 ### AI / 인공지능
 
 - [LLM (Large Language Model) — 대규모 언어 모델의 핵심 원리](topics/ai/llm-fundamentals.md)
-  - Transformer 아키텍처, Attention 메커니즘, 토큰화(BPE/SentencePiece), 학습 3단계(Pre-training/SFT/RLHF), Temperature/Top-p 파라미터, RAG, 프롬프트 엔지니어링, Hallucination 원인, Scaling Law
+  - Transformer 아키텍처, Attention 메커니즘, 토큰화(BPE/SentencePiece), 학습 3단계(Pre-training/SFT/RLHF), DPO/DeepSeek R1, Temperature/Top-p 파라미터, GPT 계열 발전사(GPT-1~4o), 주요 모델 비교(Claude/Gemini/Llama), RAG 파이프라인, 프롬프트 엔지니어링(Zero-shot/Few-shot/CoT/ToT), Hallucination 원인과 이론적 불가피성, 창발적 능력(Emergent Abilities), Scaling Law
 - [MCP (Model Context Protocol) — AI 모델과 외부 세계를 연결하는 표준 프로토콜](topics/ai/mcp-model-context-protocol.md)
   - Anthropic 오픈 표준, Host-Client-Server 아키텍처, Resources/Tools/Prompts Primitives, JSON-RPC 통신, stdio/Streamable HTTP Transport, Function Calling과의 차이, 보안 고려사항
 
