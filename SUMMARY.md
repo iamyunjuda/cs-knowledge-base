@@ -132,6 +132,13 @@
 - [브라우저 동작 원리 — Chrome 기준, URL 입력부터 화면 렌더링까지](topics/frontend/browser-rendering.md)
   - Chrome 멀티 프로세스 아키텍처, URL→DNS→TCP/TLS→HTTP 흐름, HTML 파싱→DOM/CSSOM→Render Tree→Layout→Paint→Composite, V8 엔진(Ignition/TurboFan JIT), 이벤트 루프와 렌더링 관계, React Virtual DOM과 브라우저 렌더링, DevTools 성능 분석
 
+### AI / 인공지능
+
+- [LLM (Large Language Model) — 대규모 언어 모델의 핵심 원리](topics/ai/llm-fundamentals.md)
+  - Transformer 아키텍처, Attention 메커니즘, 토큰화(BPE/SentencePiece), 학습 3단계(Pre-training/SFT/RLHF), DPO/DeepSeek R1, Temperature/Top-p 파라미터, GPT 계열 발전사(GPT-1~4o), 주요 모델 비교(Claude/Gemini/Llama), RAG 파이프라인, 프롬프트 엔지니어링(Zero-shot/Few-shot/CoT/ToT), Hallucination 원인과 이론적 불가피성, 창발적 능력(Emergent Abilities), Scaling Law
+- [MCP (Model Context Protocol) — AI 모델과 외부 세계를 연결하는 표준 프로토콜](topics/ai/mcp-model-context-protocol.md)
+  - Anthropic 오픈 표준, Host-Client-Server 아키텍처, Resources/Tools/Prompts Primitives, JSON-RPC 통신, stdio/Streamable HTTP Transport, Function Calling과의 차이, 보안 고려사항
+
 ### Map System / 지도 시스템
 
 - [공간 인덱싱과 지도 시스템 기초 — POI, 타일링, Geocoding](topics/map-system/spatial-indexing-and-map-fundamentals.md)

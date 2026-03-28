@@ -25,6 +25,7 @@
 - `topics/design-pattern/` - 디자인 패턴, 아키텍처 등
 - `topics/git/` - Git 명령어, 브랜치 전략, 병합 방식 등
 - `topics/map-system/` - 공간 인덱싱, 지도 타일링, POI, 글로벌 로컬라이징, 지도 데이터 파이프라인 등
+- `topics/ai/` - LLM, MCP, AI 모델, 프롬프트 엔지니어링 등
 
 ### 2. 마크다운 파일 생성
 - 파일명: 주제를 영문 kebab-case로 (예: `garbage-collection.md`)
