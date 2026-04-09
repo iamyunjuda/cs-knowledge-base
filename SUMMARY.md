@@ -116,6 +116,12 @@
   - Lost Update, 비관적/낙관적 Lock, Redis DECR 재고 차감, Redis-DB 불일치 해결(DLQ/Outbox/Reconciliation), 장바구니 다중 차감(Lua/Saga), 면접 답변 전략
 - [컨테이너 vs 가상머신 — Docker, Kubernetes, 그리고 왜 컨테이너인가](topics/os/container-vs-vm.md)
   - VM vs Container 구조 비교, Namespace/cgroups/OverlayFS, Docker와 K8s의 관계, 컨테이너 보안(gVisor/Kata), 컨테이너 런타임(containerd/CRI-O/Podman)
+- [코루틴과 비동기의 모든 것 Part 1 — 커널 레벨에서 이해하는 비동기의 본질](topics/os/coroutine-async-kernel-deep-dive.md)
+  - syscall과 I/O 처리 흐름, Blocking/Non-blocking/Multiplexing, epoll/io_uring 동작 원리, 스레드 컨텍스트 스위칭 비용, 코루틴 유저 스페이스 스위칭, M:N 스케줄링(Go GMP/Kotlin Dispatcher), 커널 지식이 디버깅 무기가 되는 순간
+- [코루틴과 비동기의 모든 것 Part 2 — Java/Kotlin 비동기 실전 심화](topics/os/coroutine-async-java-kotlin-practice.md)
+  - CompletableFuture 내부 동작과 함정, Virtual Thread 구조/Pinning/ThreadLocal 이슈, Kotlin Coroutine CPS 변환/상태 머신, Dispatcher별 특성(Default/IO/limitedParallelism), Structured Concurrency(coroutineScope/supervisorScope), Spring+Coroutine 통합, Virtual Thread vs Coroutine 선택 기준
+- [코루틴과 비동기의 모든 것 Part 3 — 실무에서 터지는 것들과 해결 패턴](topics/os/coroutine-async-production-pitfalls.md)
+  - Blocking in Non-blocking Context, 예외 삼킴 5가지 패턴, MDC/Security 컨텍스트 유실, 코루틴 취소와 리소스 누수, 디버깅(스택 트레이스 끊김), 실무 아키텍처 패턴(병렬 조회/비동기 분리/Flow 배치/Rate Limiting), 비동기 도입 체크리스트
 
 ### Design Pattern / 설계 패턴
 
