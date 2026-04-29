@@ -27,6 +27,8 @@
   - Heap(세대별 구조, G1GC, ZGC), Method Area(PermGen → Metaspace), JVM Stack, String Pool, Direct Memory, 주요 OOM 에러 정리
 - [Java Thread vs CompletableFuture vs Kotlin Coroutine — 근본적으로 다른 계층의 개념](topics/java-jvm/thread-future-coroutine-comparison.md)
   - Thread(OS 자원) vs CompletableFuture(결과 컨테이너/API) vs Coroutine(언어 기능), 추상화 레벨 비교, 동일 문제 세 가지 풀이, ForkJoinPool, Virtual Thread 포지션, Structured Concurrency
+- [JVM 아키텍처 심화 — ClassLoader·Class 파일 구조·Execution Engine](topics/java-jvm/jvm-architecture-deep-dive.md)
+  - JDK/JRE/JVM 관계, JDK 8→9 모듈 시스템, Class 파일 구조와 javap 바이트코드 분석, ClassLoader 3단계(Loading/Linking[Verification·Preparation·Resolution]/Initialization), Parent Delegation Model, Execution Engine(Interpreter·JIT·GC), JNI, `<clinit>` vs `<init>`, ClassNotFoundException vs NoClassDefFoundError
 
 ### Network
 
