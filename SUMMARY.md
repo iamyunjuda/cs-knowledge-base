@@ -70,6 +70,8 @@
   - 멀티 레이어 캐싱(L1 Local/L2 Redis/L3 DB), 캐시 무효화 흐름(DEL+Kafka evict), Stale 윈도우, Cache Stampede 방지(setNx+spin retry), 호텔(읽기 heavy→캐시) vs 콘서트(쓰기 heavy→Redis DECR), Lua Script 중복 방지, Redis 멀티 노드 동시성 보장
 - [Redis 장애 시나리오 분석 및 대응 전략 — 10만 트래픽 호텔 예약 시스템](topics/infra/redis-failure-strategies.md)
   - Redis 4가지 용도(캐시/분산락/Rate Limit/세션), 장애 시나리오(완전 다운/Slow Redis/부분 장애), Circuit Breaker(Resilience4j), 2-Tier 캐싱(Caffeine+Redis), 분산 락 폴백(DB 비관적 락 유지), Redis Sentinel vs Cluster, 장애 대응 플레이북
+- [금융 규제 환경의 DevOps 파이프라인 — 카카오뱅크 사례로 보는 결재·접근제어·망분리](topics/infra/financial-devops-pipeline.md)
+  - GitOps로 결재/증적 자동화(Terraform+GitLab MR Approval+Codeowners), Daemonless 빌드(Kaniko/Jib/Buildkit 비교), AWS OIDC ID Token 페더레이션(IRSA/Access Key 대안), 망별 GitLab Enterprise + 망연계, 전자금융감독규정 29조 대응, 규제 가치와 개발 워크플로우의 접점
 
 ### Blockchain / Web3
 
@@ -132,6 +134,8 @@
 
 ### Git
 
+- [Git 브랜치 전략 — Git Flow, GitHub Flow, Trunk-Based의 차이와 선택 기준](topics/git/branching-strategies.md)
+  - Git Flow(5 브랜치)/GitHub Flow(main 단일)/GitLab Flow(환경별)/Trunk-Based(단명 브랜치+Feature Flag) 구조 비교, 팀 규모·배포 주기·릴리스 방식별 선택 기준, hotfix 처리, 환경 분리(브랜치 vs 태그), 모노레포·Protected Branch·명명 규칙
 - [Rebase Merge vs Squash Merge — Git 병합 전략의 차이와 선택 기준](topics/git/merge-strategies.md)
   - Merge Commit / Rebase Merge / Squash Merge 비교, 커밋 보존 여부, 히스토리 형태 차이, Squash 후 브랜치 삭제 이유, 실무 전략 선택 기준
 
