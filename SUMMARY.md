@@ -18,6 +18,8 @@
   - Coyote(HTTP 엔진) vs Catalina(Servlet 엔진) vs Jasper(JSP 엔진), Server→Service→Engine→Host→Context 계층, Valve Pipeline vs Filter Chain, catalina.out 로그, ErrorReportValve가 HTML을 반환하는 이유, 내장 Tomcat 설정
 - [Tomcat Thread Pool vs DB Connection Pool — 완전히 다른 두 풀의 역할과 관계](topics/spring/tomcat-vs-db-thread-pool.md)
   - Tomcat 워커 스레드 풀 vs HikariCP 커넥션 풀 차이, 요청 흐름에서의 위치, 크기 불균형(200 vs 10) 이유, 풀 고갈 시 연쇄 장애, @Transactional 범위와 커넥션 점유, 모니터링 키 메트릭
+- [Spring StateMachine으로 FSM 구현하기 — 카카오뱅크 알림 시스템 사례](topics/spring/spring-statemachine-fsm.md)
+  - FSM(유한 상태 머신) 개념과 필요성, Spring StateMachine 구성 요소(State/Event/Transition/Guard/Action), 카카오뱅크 UMS(통합 알림 시스템) 적용 사례, Kotlin 구성 예시, Redis 영속화(RedisPersistingStateMachineInterceptor), DIP로 프레임워크 결합도 낮추기, TTL 미설정으로 인한 Redis 메모리 누수 함정, 직접 구현 vs 프레임워크 선택 기준, State Pattern/BPMN과의 비교
 
 ### Java / JVM
 
