@@ -29,6 +29,8 @@
   - Thread(OS 자원) vs CompletableFuture(결과 컨테이너/API) vs Coroutine(언어 기능), 추상화 레벨 비교, 동일 문제 세 가지 풀이, ForkJoinPool, Virtual Thread 포지션, Structured Concurrency
 - [JVM 아키텍처 심화 — ClassLoader·Class 파일 구조·Execution Engine](topics/java-jvm/jvm-architecture-deep-dive.md)
   - JDK/JRE/JVM 관계, JDK 8→9 모듈 시스템, Class 파일 구조와 javap 바이트코드 분석, ClassLoader 3단계(Loading/Linking[Verification·Preparation·Resolution]/Initialization), Parent Delegation Model, Execution Engine(Interpreter·JIT·GC), JNI, `<clinit>` vs `<init>`, ClassNotFoundException vs NoClassDefFoundError
+- [코틀린은 왜 등장했고, 자바를 거쳐 컴파일되는가?](topics/java-jvm/kotlin-origin-and-compilation.md)
+  - JetBrains의 자가 발화 배경, 자바의 한계(Verbosity/NPE/Checked Exception), Scala/Groovy 대비 선택 이유, 컴파일 경로 오해 정정(.kt→kotlinc→.class, 자바 미경유), Kotlin/JVM·JS·Native·Wasm 멀티플랫폼, 런타임 성능 동등성, kotlinc vs javac 컴파일 속도, K2 컴파일러, Intrinsics.checkNotNull, inline 함수, 데이터 클래스, suspend의 CPS 변환, @kotlin.Metadata, 자바와의 양방향 호환성
 
 ### Network
 
